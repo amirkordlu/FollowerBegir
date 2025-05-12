@@ -14,21 +14,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.amk.followerbegir.ui.features.homeScreen.HomeScreen
 import com.amk.followerbegir.ui.features.orderScreen.OrderScreen
 import com.amk.followerbegir.ui.features.profileScreen.ProfileScreen
+import com.amk.followerbegir.ui.features.profileScreen.ShopScreen
 import com.amk.followerbegir.ui.theme.FollowerBegirTheme
 import com.amk.followerbegir.ui.theme.navigationBarTextStyle
 import com.amk.followerbegir.util.MyScreens
 import com.amk.followerbegir.util.navigationBarItems
+import dev.burnoo.cokoin.navigation.KoinNavHost
 
 @Preview(showBackground = true)
 @Composable
@@ -44,8 +43,8 @@ fun MainScreenPreview() {
 
 @Composable
 fun MainScreen() {
-    val navController = rememberNavController()
-    val saveableStateHolder = rememberSaveableStateHolder()
+    val navigation = rememberNavController()
+
     var selectedItemIndex by rememberSaveable { mutableStateOf(1) }
 
     val items = navigationBarItems
@@ -64,8 +63,8 @@ fun MainScreen() {
                         onClick = {
                             selectedItemIndex = index
                             val screen = screens[index]
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.startDestinationId) {
+                            navigation.navigate(screen.route) {
+                                popUpTo(navigation.graph.startDestinationId) {
                                     saveState = true
                                 }
                                 launchSingleTop = true
@@ -98,46 +97,24 @@ fun MainScreen() {
             }
         }
     ) { paddingValues ->
-        NavHost(
-            navController = navController,
+        KoinNavHost(
+            navController = navigation,
             startDestination = MyScreens.MainScreen.route,
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(MyScreens.MainScreen.route) {
-                saveableStateHolder.SaveableStateProvider(MyScreens.MainScreen.route) {
-                    HomeScreen()
-                }
+                HomeScreen()
             }
             composable(MyScreens.OrderScreen.route) {
-                saveableStateHolder.SaveableStateProvider(MyScreens.OrderScreen.route) {
-                    OrderScreen()
-                }
+                OrderScreen()
             }
             composable(MyScreens.ProfileScreen.route) {
-                saveableStateHolder.SaveableStateProvider(MyScreens.ProfileScreen.route) {
-                    ProfileScreen()
-                }
+                ProfileScreen()
+            }
+            composable(MyScreens.ShopScreen.route) {
+                ShopScreen()
             }
         }
     }
 }
 
-
-@Composable
-fun BottomNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
-    NavHost(
-        navController = navController,
-        startDestination = MyScreens.MainScreen.route,
-        modifier = modifier
-    ) {
-        composable(MyScreens.MainScreen.route) {
-            HomeScreen()
-        }
-        composable(MyScreens.OrderScreen.route) {
-            OrderScreen()
-        }
-        composable(MyScreens.ProfileScreen.route) {
-            ProfileScreen()
-        }
-    }
-}

@@ -27,3 +27,35 @@ val navigationBarTextStyle = TextStyle(
     color = Color(0xFF000000),
     textAlign = TextAlign.Center,
 )
+
+val textFieldStyle = TextStyle(
+    fontSize = 16.sp,
+    fontFamily = FontFamily(Font(R.font.dana_medium)),
+    fontWeight = FontWeight(400),
+    color = Color(0xFF424242),
+    textAlign = TextAlign.Right,
+)
+
+val bodyLargeCard = TextStyle(
+    fontSize = 22.sp,
+    fontFamily = FontFamily(Font(R.font.dana_medium)),
+    fontWeight = FontWeight(600),
+    color = Color(0xFFFFFFFF),
+    textAlign = TextAlign.Center,
+)
+
+val bodyMediumCard = TextStyle(
+    fontSize = 18.sp,
+    fontFamily = FontFamily(Font(R.font.dana_medium)),
+    fontWeight = FontWeight(500),
+    color = Color(0xFFFFCCB9),
+    textAlign = TextAlign.Center,
+)
+
+val bodySmallCard = TextStyle(
+    fontSize = 14.sp,
+    fontFamily = FontFamily(Font(R.font.dana_medium)),
+    fontWeight = FontWeight(500),
+    color = Color(0xFFFFFFFF),
+    textAlign = TextAlign.Center,
+)
