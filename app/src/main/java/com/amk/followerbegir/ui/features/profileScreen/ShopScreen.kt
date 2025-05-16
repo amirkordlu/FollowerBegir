@@ -135,10 +135,7 @@ fun ShopScreen() {
                 .background(
                     color = Color(0xFF7E84F9),
                     shape = RoundedCornerShape(size = 16.dp)
-                )
-                .clickable(onClick = {
-                    navigation.navigate(MyScreens.LoginScreen.route)
-                }),
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -157,15 +154,15 @@ fun ShopScreen() {
                         "در حال بارگذاری..."
                     }
 
-                    viewModel.points.value == null -> {
-                        viewModel.addPoints(context, lifecycleOwner, 2)
-                        Toast.makeText(
-                            context,
-                            "به مناسبت ورود به نگاره 2 تا سکه مهمون ما باش :)",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        "2 امتیاز گرفتی"
-                    }
+//                    viewModel.points.value == null -> {
+//                        viewModel.addPoints(context, lifecycleOwner, 2)
+//                        Toast.makeText(
+//                            context,
+//                            "به مناسبت ورود به برنامه 2 تا سکه مهمون ما باش :)",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                        "2 امتیاز گرفتی"
+//                    }
 
                     !NetworkChecker(context).isInternetConnected -> {
                         ":( اینترنت نداری"
@@ -173,7 +170,7 @@ fun ShopScreen() {
 
                     else -> {
                         val currentPoints = viewModel.points.value
-                        "امتیاز فعلی: $currentPoints"
+                        "موجودی کیف پول: $currentPoints"
                     }
                 },
                 style = Typography.bodyMedium,
@@ -476,12 +473,12 @@ fun BuyCoinCard(
                 if (hasOff) {
                     Box(
                         modifier =
-                        Modifier
-                            .background(
-                                color = Color(0xFFEF5350),
-                                shape = RoundedCornerShape(size = 6.dp)
-                            )
-                            .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 4.dp)
+                            Modifier
+                                .background(
+                                    color = Color(0xFFEF5350),
+                                    shape = RoundedCornerShape(size = 6.dp)
+                                )
+                                .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 4.dp)
                     ) {
                         Text(
                             text = offValue,
