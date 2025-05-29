@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.amk.followerbegir.model.data.ServiceItemsResponse
 import com.amk.followerbegir.ui.theme.FollowerBegirTheme
 import com.amk.followerbegir.ui.theme.Typography
+import com.amk.followerbegir.ui.theme.textFieldStyle
 import com.amk.followerbegir.util.MyScreens
 import com.amk.followerbegir.util.appendTextDialog
 import com.amk.followerbegir.util.convertHTMLToText
@@ -41,18 +42,57 @@ fun HomeScreenPreview() {
 @Composable
 fun HomeScreen() {
     val viewModel = getNavViewModel<HomeScreenViewModel>()
-    viewModel.getAllItemsService()
+    val services = viewModel.servicesList.value
+    val isLoading = viewModel.isLoading.value
+    val isError = viewModel.isError.value
+
+    LaunchedEffect(key1 = Unit) {
+        if (services.isEmpty()) {
+            viewModel.getAllItemsService()
+        }
+    }
 
     val allowedServices = listOf("1652", "2051", "2052", "2053", "2072", "2086")
-    val filteredServices = viewModel.servicesList.value.filter { it.service in allowedServices }
+    val filteredServices = services.filter { it.service in allowedServices }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("HomeScreen")
-        ServicesList(filteredServices)
+    when {
+        isLoading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            }
+        }
+
+        isError -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("خطا در دریافت اطلاعات از سرور", style = textFieldStyle)
+            }
+        }
+
+        filteredServices.isEmpty() -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("سرویسی یافت نشد")
+            }
+        }
+
+        else -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("HomeScreen")
+                ServicesList(filteredServices)
+            }
+        }
     }
 }
 
