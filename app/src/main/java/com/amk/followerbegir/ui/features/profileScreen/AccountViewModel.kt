@@ -69,7 +69,7 @@ class AccountViewModel(
                 context,
                 lifecycleOwner,
                 callback = BazaarStorageCallback { response ->
-                    val currentPoints = response?.data?.toReadableString()?.toIntOrNull()
+                    val currentPoints = response?.data?.toReadableString()?.toIntOrNull() ?:0
                     points.value = currentPoints
                     isLoading.value = false
                 }

@@ -111,7 +111,6 @@ fun ServicesList(services: List<ServiceItemsResponse>) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemCard(response: ServiceItemsResponse) {
-    var showDialog by remember { mutableStateOf(false) }
     val navigation = getNavController()
 
     Surface(
@@ -121,34 +120,32 @@ fun ItemCard(response: ServiceItemsResponse) {
             .padding(top = 12.dp, start = 32.dp, end = 32.dp, bottom = 22.dp),
         shape = RoundedCornerShape(24.dp),
         color = DarkGray,
-        border = BorderStroke(0.5.dp, Color.White.copy(alpha = 0.70f)),
-        onClick = { showDialog = true }
+        border = BorderStroke(0.5.dp, White.copy(alpha = 0.70f)),
+        onClick = { navigation.navigate(MyScreens.DetailScreen.createRoute(response.service)) }
     ) {
         Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.End) {
             Text(text = response.name, style = Typography.bodyMedium, color = White)
 
             Spacer(modifier = Modifier.padding(top = 8.dp))
 
-            Text(text = "category: " + response.category, style = Typography.bodySmall, color = White)
+            Text(
+                text = "category: " + response.category,
+                style = Typography.bodySmall,
+                color = White
+            )
 
             Spacer(modifier = Modifier.padding(top = 8.dp))
 
-            Text(text = response.rate.toString() + "  تومان", style = Typography.bodySmall, color = White)
+            Text(
+                text = response.rate.toString() + "  تومان",
+                style = Typography.bodySmall,
+                color = White
+            )
 
             Spacer(modifier = Modifier.padding(top = 8.dp))
 
             Text(response.service, style = Typography.bodyMedium, color = White)
         }
-//
-//        if (showDialog) {
-//            AlertDialog(
-//                onDismissRequest = { showDialog = false },
-//                onConfirmation = { },
-//                dialogTitle = appendTextDialog(convertHTMLToText(response.name)),
-//                dialogText = convertHTMLToText(response.desc),
-//                icon = Icons.Default.Info
-//            )
-//        }
 
     }
 }

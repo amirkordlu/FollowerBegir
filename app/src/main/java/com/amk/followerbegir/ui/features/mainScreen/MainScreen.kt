@@ -17,8 +17,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.amk.followerbegir.ui.features.detailScreen.DetailScreen
 import com.amk.followerbegir.ui.features.homeScreen.HomeScreen
 import com.amk.followerbegir.ui.features.orderScreen.OrderScreen
 import com.amk.followerbegir.ui.features.profileScreen.ProfileScreen
@@ -113,6 +116,13 @@ fun MainScreen() {
             }
             composable(MyScreens.ShopScreen.route) {
                 ShopScreen()
+            }
+            composable(
+                route = MyScreens.DetailScreen.route,
+                arguments = listOf(navArgument("serviceId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val serviceId = backStackEntry.arguments?.getString("serviceId")
+                DetailScreen(serviceId)
             }
         }
     }

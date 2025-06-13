@@ -7,5 +7,7 @@ sealed class MyScreens(val route: String) {
     object OrderScreen : MyScreens("orderScreen")
     object LoginScreen : MyScreens("loginScreen")
     object ShopScreen : MyScreens("shopScreen")
-
+    object DetailScreen : MyScreens("detail/{serviceId}") {
+        fun createRoute(serviceId: String) = "detail/$serviceId"
+    }
 }
