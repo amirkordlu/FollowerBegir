@@ -5,6 +5,7 @@ import com.amk.followerbegir.model.repository.ServiceItemsRepository
 import com.amk.followerbegir.model.repository.ServiceItemsRepositoryImpl
 import com.amk.followerbegir.ui.features.detailScreen.DetailScreenViewModel
 import com.amk.followerbegir.ui.features.homeScreen.HomeScreenViewModel
+import com.amk.followerbegir.ui.features.profileScreen.AccountViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -18,4 +19,5 @@ val myModules = module {
 
     viewModel { DetailScreenViewModel(get()) }
 
+    viewModel { AccountViewModel() }
 }

@@ -109,7 +109,7 @@ fun ShopScreen() {
         )
         // Get login and points
         viewModel.getBazaarLogin(context, lifecycleOwner)
-        viewModel.loadPointsFromBazaar(context, lifecycleOwner)
+        viewModel.loadUserData(context, lifecycleOwner)
     }
 
 
@@ -169,7 +169,7 @@ fun ShopScreen() {
                     }
 
                     else -> {
-                        val currentPoints = viewModel.points.value
+                        val currentPoints = viewModel.wallet.value
                         "موجودی کیف پول: $currentPoints"
                     }
                 },
@@ -194,7 +194,7 @@ fun ShopScreen() {
                     .weight(1f)
                     .padding(horizontal = 10.dp),
                 {
-                    if (viewModel.points.value != null && viewModel.hasLogin.value) {
+                    if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
                             "25coin",
                             "purchasePayload",
@@ -203,7 +203,7 @@ fun ShopScreen() {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.addPoints(context, lifecycleOwner, 25)
+                                viewModel.increaseWallet(context, lifecycleOwner, 25)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
                                         "token: ${purchaseEntity.purchaseToken}"
@@ -225,7 +225,7 @@ fun ShopScreen() {
                     .weight(1f)
                     .padding(horizontal = 10.dp),
                 {
-                    if (viewModel.points.value != null && viewModel.hasLogin.value) {
+                    if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
                             "10coin",
                             "purchasePayload",
@@ -234,7 +234,7 @@ fun ShopScreen() {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.addPoints(context, lifecycleOwner, 10)
+                                viewModel.increaseWallet(context, lifecycleOwner, 10)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
                                         "token: ${purchaseEntity.purchaseToken}"
@@ -266,7 +266,7 @@ fun ShopScreen() {
                     .weight(1f)
                     .padding(horizontal = 10.dp),
                 {
-                    if (viewModel.points.value != null && viewModel.hasLogin.value) {
+                    if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
                             "100coin",
                             "purchasePayload",
@@ -275,7 +275,7 @@ fun ShopScreen() {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.addPoints(context, lifecycleOwner, 100)
+                                viewModel.increaseWallet(context, lifecycleOwner, 100)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
                                         "token: ${purchaseEntity.purchaseToken}"
@@ -297,7 +297,7 @@ fun ShopScreen() {
                     .weight(1f)
                     .padding(horizontal = 10.dp),
                 {
-                    if (viewModel.points.value != null && viewModel.hasLogin.value) {
+                    if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
                             "50coin",
                             "purchasePayload",
@@ -306,7 +306,7 @@ fun ShopScreen() {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.addPoints(context, lifecycleOwner, 50)
+                                viewModel.increaseWallet(context, lifecycleOwner, 50)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
                                         "token: ${purchaseEntity.purchaseToken}"
@@ -338,7 +338,7 @@ fun ShopScreen() {
                     .weight(1f)
                     .padding(horizontal = 10.dp),
                 {
-                    if (viewModel.points.value != null && viewModel.hasLogin.value) {
+                    if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
                             "500coin",
                             "purchasePayload",
@@ -347,7 +347,7 @@ fun ShopScreen() {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.addPoints(context, lifecycleOwner, 500)
+                                viewModel.increaseWallet(context, lifecycleOwner, 500)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
                                         "token: ${purchaseEntity.purchaseToken}"
@@ -374,7 +374,7 @@ fun ShopScreen() {
                     .weight(1f)
                     .padding(horizontal = 10.dp),
                 {
-                    if (viewModel.points.value != null && viewModel.hasLogin.value) {
+                    if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
                             "200coin",
                             "purchasePayload",
@@ -383,7 +383,7 @@ fun ShopScreen() {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.addPoints(context, lifecycleOwner, 200)
+                                viewModel.increaseWallet(context, lifecycleOwner, 200)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
                                         "token: ${purchaseEntity.purchaseToken}"

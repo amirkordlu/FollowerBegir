@@ -2,29 +2,27 @@ package com.amk.followerbegir.ui.features.profileScreen
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.amk.followerbegir.model.data.UserStoredData
 import com.amk.followerbegir.util.coroutineExceptionHandler
 import com.farsitel.bazaar.core.BazaarSignIn
 import com.farsitel.bazaar.storage.BazaarStorage
 import com.farsitel.bazaar.storage.callback.BazaarStorageCallback
 import com.farsitel.bazaar.util.ext.toReadableString
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
-class AccountViewModel(
-
-) : ViewModel() {
+class AccountViewModel : ViewModel() {
 
     val userID = mutableStateOf("")
     val hasLogin = mutableStateOf(false)
-
-    val savedData = mutableStateOf("")
-    val points = mutableStateOf<Int?>(null)
-
-    val isLoading = mutableStateOf(true)
+    val wallet = mutableStateOf(0)
+    val orderNumbers = mutableStateOf<List<Int>>(emptyList())
+    val isLoading = mutableStateOf(false)
 
     fun handleSignInResult(intent: Intent?) {
         val account = intent?.let { BazaarSignIn.getSignedInAccountFromIntent(it) }
@@ -34,69 +32,87 @@ class AccountViewModel(
         }
     }
 
-    fun getBazaarLogin(context: Context, lifecycleOwner: LifecycleOwner) {
+    fun getBazaarLogin(context: Context, owner: LifecycleOwner) {
         viewModelScope.launch(coroutineExceptionHandler) {
-            BazaarSignIn.getLastSignedInAccount(
-                context, lifecycleOwner
-            ) { response ->
-
+            BazaarSignIn.getLastSignedInAccount(context, owner) { response ->
                 val account = response?.data
-
                 if (account?.accountId?.isNotEmpty() == true) {
                     userID.value = account.accountId
                     hasLogin.value = true
-                    Log.v("AccountViewModel", account.accountId.toString())
                 }
             }
         }
     }
 
-    fun saveDataInBazaar(context: Context, lifecycleOwner: LifecycleOwner, data: String) {
-        viewModelScope.launch(coroutineExceptionHandler) {
-            BazaarStorage.saveData(context,
-                lifecycleOwner,
-                data = data.toByteArray(),
-                BazaarStorageCallback { savedResponse ->
-                    savedData.value = savedResponse?.data?.toReadableString().toString()
-                })
-        }
+    private fun saveUserData(context: Context, owner: LifecycleOwner, data: UserStoredData) {
+        val json = Json.encodeToString(data)
+        BazaarStorage.saveData(context, owner, json.toByteArray(), BazaarStorageCallback { })
     }
 
-    fun loadPointsFromBazaar(context: Context, lifecycleOwner: LifecycleOwner) {
+    fun loadUserData(context: Context, owner: LifecycleOwner) {
         isLoading.value = true
         viewModelScope.launch(coroutineExceptionHandler) {
-            BazaarStorage.getSavedData(
-                context,
-                lifecycleOwner,
-                callback = BazaarStorageCallback { response ->
-                    val currentPoints = response?.data?.toReadableString()?.toIntOrNull() ?:0
-                    points.value = currentPoints
-                    isLoading.value = false
+            BazaarStorage.getSavedData(context, owner, BazaarStorageCallback { response ->
+                val json = response?.data?.toReadableString().orEmpty()
+                val userData = try {
+                    Json.decodeFromString<UserStoredData>(json)
+                } catch (e: Exception) {
+                    UserStoredData(0, emptyList())
                 }
-            )
+                wallet.value = userData.wallet
+                orderNumbers.value = userData.orderNumbers
+                isLoading.value = false
+            })
         }
     }
 
-    fun addPoints(context: Context, lifecycleOwner: LifecycleOwner, increment: Int) {
-        val newPoints = (points.value ?: 0) + increment
-        saveDataInBazaar(context, lifecycleOwner, newPoints.toString())
-        points.value = newPoints
+    fun increaseWallet(context: Context, owner: LifecycleOwner, amount: Int) {
+        updateUserData(context, owner) { data ->
+            data.copy(wallet = data.wallet + amount)
+        }
     }
 
-    fun subtractPoints(
+    fun decreaseWallet(
         context: Context,
-        lifecycleOwner: LifecycleOwner,
-        decrement: Int,
+        owner: LifecycleOwner,
+        amount: Int,
         onError: (String) -> Unit
     ) {
-        val currentPoints = points.value ?: 0
-        val newPoints = currentPoints - decrement
-        if (newPoints >= 0) {
-            saveDataInBazaar(context, lifecycleOwner, newPoints.toString())
-            points.value = newPoints
-        } else {
-            onError.invoke("Current point is 0")
+        updateUserData(context, owner) { data ->
+            if (data.wallet >= amount) {
+                data.copy(wallet = data.wallet - amount)
+            } else {
+                onError("موجودی کافی نیست")
+                return@updateUserData null
+            }
         }
     }
 
+    fun addOrderNumber(context: Context, owner: LifecycleOwner, order: Int) {
+        updateUserData(context, owner) { data ->
+            data.copy(orderNumbers = data.orderNumbers + order)
+        }
+    }
+
+    private fun updateUserData(
+        context: Context,
+        owner: LifecycleOwner,
+        update: (UserStoredData) -> UserStoredData?
+    ) {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            BazaarStorage.getSavedData(context, owner, BazaarStorageCallback { response ->
+                val json = response?.data?.toReadableString().orEmpty()
+                val current = try {
+                    Json.decodeFromString<UserStoredData>(json)
+                } catch (e: Exception) {
+                    UserStoredData(0, emptyList())
+                }
+
+                val updated = update(current) ?: return@BazaarStorageCallback
+                wallet.value = updated.wallet
+                orderNumbers.value = updated.orderNumbers
+                saveUserData(context, owner, updated)
+            })
+        }
+    }
 }
