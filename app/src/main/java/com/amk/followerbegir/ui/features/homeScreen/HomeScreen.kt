@@ -22,6 +22,7 @@ import com.amk.followerbegir.ui.theme.FollowerBegirTheme
 import com.amk.followerbegir.ui.theme.Typography
 import com.amk.followerbegir.ui.theme.textFieldStyle
 import com.amk.followerbegir.util.MyScreens
+import com.amk.followerbegir.util.allowedServices
 import com.amk.followerbegir.util.appendTextDialog
 import com.amk.followerbegir.util.convertHTMLToText
 import dev.burnoo.cokoin.navigation.getNavController
@@ -52,7 +53,6 @@ fun HomeScreen() {
         }
     }
 
-    val allowedServices = listOf("1652", "2051", "2052", "2053", "2072", "2086")
     val filteredServices = services.filter { it.service in allowedServices }
 
     when {
@@ -89,7 +89,6 @@ fun HomeScreen() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("HomeScreen")
                 ServicesList(filteredServices)
             }
         }

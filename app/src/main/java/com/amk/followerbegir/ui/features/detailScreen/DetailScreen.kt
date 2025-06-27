@@ -2,8 +2,10 @@ package com.amk.followerbegir.ui.features.detailScreen
 
 import android.text.method.LinkMovementMethod
 import android.widget.TextView
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,14 +14,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +55,12 @@ fun DetailScreen(serviceId: String?) {
     val detail = viewModel.itemDetail.value
     val isLoading = viewModel.isLoading.value
     val isError = viewModel.isError.value
+    val orderMessage = viewModel.orderMessage.value
+
+    val pageId = remember { mutableStateOf("") }
+    val selectedQuantity = remember { mutableStateOf<Int?>(null) }
+
+    val chipOptions = listOf(50, 100, 200, 300, 500, 1000)
 
     LaunchedEffect(Unit) {
         if (detail == null && serviceId != null) {
@@ -55,15 +68,19 @@ fun DetailScreen(serviceId: String?) {
         }
     }
 
-
     when {
         isLoading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 CircularProgressIndicator()
+                Text(text = "لطفا کمی صبر کنید")
             }
         }
 
-        isError -> {
+        isError && detail == null -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("خطا در دریافت اطلاعات", color = MaterialTheme.colorScheme.error)
             }
@@ -76,6 +93,99 @@ fun DetailScreen(serviceId: String?) {
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
+                Text(
+                    text = "ثبت سفارش",
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+
+                OutlinedTextField(
+                    value = pageId.value,
+                    onValueChange = { pageId.value = it },
+                    label = { Text("آیدی پیج") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text("تعداد سفارش:", style = MaterialTheme.typography.titleSmall)
+                Spacer(modifier = Modifier.height(6.dp))
+
+                val firstRow = chipOptions.take(3)
+                val secondRow = chipOptions.drop(3)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    firstRow.forEach { option ->
+                        AssistChip(
+                            onClick = { selectedQuantity.value = option },
+                            label = { Text("$option") },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = if (selectedQuantity.value == option) {
+                                AssistChipDefaults.assistChipColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    labelColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            } else {
+                                AssistChipDefaults.assistChipColors()
+                            }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    secondRow.forEach { option ->
+                        AssistChip(
+                            onClick = { selectedQuantity.value = option },
+                            label = { Text("$option") },
+                            shape = RoundedCornerShape(20.dp),
+                            colors = if (selectedQuantity.value == option) {
+                                AssistChipDefaults.assistChipColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    labelColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            } else {
+                                AssistChipDefaults.assistChipColors()
+                            }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        viewModel.addOrderService(
+                            serviceId?.toInt() ?: 0,
+                            pageId.value,
+                            selectedQuantity.value ?: 0
+                        )
+                    },
+                    enabled = pageId.value.isNotBlank() && selectedQuantity.value != null,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("ثبت سفارش")
+                }
+
+                if (orderMessage != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = orderMessage,
+                        color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
                 Text(
                     text = "مشخصات سرویس",
                     style = MaterialTheme.typography.headlineSmall,
@@ -117,8 +227,6 @@ fun DetailScreen(serviceId: String?) {
         }
     }
 }
-
-
 
 @Composable
 fun DetailCard(title: String, value: String) {
