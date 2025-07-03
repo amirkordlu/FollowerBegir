@@ -1,4 +1,4 @@
-package com.amk.followerbegir.model.repository
+package com.amk.followerbegir.model.repository.addOrderRepostiory
 
 import com.amk.followerbegir.model.data.AddOrderServiceResponse
 

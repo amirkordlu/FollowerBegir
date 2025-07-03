@@ -4,8 +4,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amk.followerbegir.model.data.ServiceItemsResponse
-import com.amk.followerbegir.model.repository.AddOrderServiceRepository
-import com.amk.followerbegir.model.repository.ServiceItemsRepository
+import com.amk.followerbegir.model.repository.addOrderRepostiory.AddOrderServiceRepository
+import com.amk.followerbegir.model.repository.serviceItemsRepository.ServiceItemsRepository
 import com.amk.followerbegir.util.coroutineExceptionHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

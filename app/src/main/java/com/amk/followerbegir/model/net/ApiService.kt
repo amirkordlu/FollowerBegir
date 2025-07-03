@@ -1,6 +1,7 @@
 package com.amk.followerbegir.model.net
 
 import com.amk.followerbegir.model.data.AddOrderServiceResponse
+import com.amk.followerbegir.model.data.OrderStatusResponse
 import com.amk.followerbegir.model.data.ServiceItemsResponse
 import com.amk.followerbegir.util.API_KEY
 import com.amk.followerbegir.util.BASE_URL
@@ -27,6 +28,13 @@ interface ApiService {
         @Query("quantity") quantity: Int,
         @Query("is_test") isTest: Int
     ): AddOrderServiceResponse
+
+    @GET("api/v2/")
+    suspend fun getOrderStatus(
+        @Query("key") key: String = API_KEY,
+        @Query("action") action: String = "status",
+        @Query("orders") orders: String
+    ): Map<String, OrderStatusResponse>
 
 }
 

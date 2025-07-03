@@ -1,4 +1,4 @@
-package com.amk.followerbegir.model.repository
+package com.amk.followerbegir.model.repository.serviceItemsRepository
 
 import com.amk.followerbegir.model.data.ServiceItemsResponse
 

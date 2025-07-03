@@ -1,5 +1,6 @@
 package com.amk.followerbegir.ui.features.detailScreen
 
+import android.annotation.SuppressLint
 import android.text.method.LinkMovementMethod
 import android.widget.TextView
 import android.widget.Toast

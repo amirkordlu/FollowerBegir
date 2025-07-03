@@ -41,3 +41,14 @@ fun appendTextDialog(text: String): AnnotatedString {
 fun parseHtmlToSpanned(html: String): Spanned {
     return HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_LEGACY)
 }
+
+fun getPersianStatus(status: String?): String {
+    return when (status) {
+        null -> "نامشخص"
+        "Pending" -> "در انتظار"
+        "Canceled" -> "لغو شده"
+        "processing" -> "در حال پردازش"
+        "Completed" -> "تکمیل شده"
+        else -> status
+    }
+}

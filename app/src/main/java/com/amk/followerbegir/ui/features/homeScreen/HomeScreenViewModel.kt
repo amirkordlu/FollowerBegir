@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amk.followerbegir.model.data.ServiceItemsResponse
-import com.amk.followerbegir.model.repository.ServiceItemsRepository
+import com.amk.followerbegir.model.repository.serviceItemsRepository.ServiceItemsRepository
 import kotlinx.coroutines.launch
 
 class HomeScreenViewModel(
