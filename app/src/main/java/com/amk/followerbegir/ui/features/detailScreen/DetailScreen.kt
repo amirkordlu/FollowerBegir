@@ -22,6 +22,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
 import com.amk.followerbegir.ui.features.profileScreen.AccountViewModel
 import com.amk.followerbegir.ui.theme.FollowerBegirTheme
+import com.amk.followerbegir.util.MyScreens
+import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
 
 @Preview(showBackground = true)
@@ -46,6 +48,7 @@ fun DetailScreen(serviceId: String?) {
     val orderMessage = viewModel.orderMessage.value
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val navController = getNavController()
 
     val pageId = remember { mutableStateOf("") }
     val pageIdError = remember { mutableStateOf("") }
@@ -60,6 +63,8 @@ fun DetailScreen(serviceId: String?) {
         if (serviceId != null) {
             viewModel.loadServiceDetail(serviceId)
         }
+        accountViewModel.getBazaarLogin(context, lifecycleOwner)
+        accountViewModel.loadUserData(context, lifecycleOwner)
     }
 
     when {
@@ -70,7 +75,7 @@ fun DetailScreen(serviceId: String?) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CircularProgressIndicator()
-                Text(text = "لطفا کمی صبر کنید")
+                Text("لطفا کمی صبر کنید")
             }
         }
 
@@ -87,11 +92,9 @@ fun DetailScreen(serviceId: String?) {
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-                Text(
-                    text = "ثبت سفارش",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
+                Text("ثبت سفارش", style = MaterialTheme.typography.headlineSmall)
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedTextField(
                     value = pageId.value,
@@ -105,7 +108,7 @@ fun DetailScreen(serviceId: String?) {
                     label = { Text("آیدی پیج یا لینک") },
                     supportingText = {
                         if (pageIdError.value.isNotEmpty()) {
-                            Text(text = pageIdError.value, color = MaterialTheme.colorScheme.error)
+                            Text(pageIdError.value, color = MaterialTheme.colorScheme.error)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -134,10 +137,7 @@ fun DetailScreen(serviceId: String?) {
                     label = { Text("تعداد سفارش (${detail.min} تا ${detail.max})") },
                     supportingText = {
                         if (quantityError.value.isNotEmpty()) {
-                            Text(
-                                text = quantityError.value,
-                                color = MaterialTheme.colorScheme.error
-                            )
+                            Text(quantityError.value, color = MaterialTheme.colorScheme.error)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -157,15 +157,9 @@ fun DetailScreen(serviceId: String?) {
                         } == true
 
                         if (!isPageIdValid || !isQuantityValid) {
-                            if (pageId.value.isBlank()) pageIdError.value =
-                                "لطفاً آیدی را وارد کنید"
-                            if (quantity.value.isBlank()) quantityError.value =
-                                "لطفاً تعداد سفارش را وارد کنید"
-                            Toast.makeText(
-                                context,
-                                "لطفاً موارد وارد شده را بررسی کنید",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            if (pageId.value.isBlank()) pageIdError.value = "لطفاً آیدی را وارد کنید"
+                            if (quantity.value.isBlank()) quantityError.value = "لطفاً تعداد سفارش را وارد کنید"
+                            Toast.makeText(context, "لطفاً موارد وارد شده را بررسی کنید", Toast.LENGTH_LONG).show()
                         } else {
                             showConfirmDialog.value = true
                         }
@@ -176,6 +170,9 @@ fun DetailScreen(serviceId: String?) {
                 }
 
                 if (showConfirmDialog.value) {
+                    val quantityValue = quantity.value.toIntOrNull() ?: 0
+                    val totalPrice = ((quantityValue / 1000f) * detail.rate).toInt()
+
                     AlertDialog(
                         onDismissRequest = {
                             showConfirmDialog.value = false
@@ -184,13 +181,43 @@ fun DetailScreen(serviceId: String?) {
                         confirmButton = {
                             Button(
                                 onClick = {
-                                    viewModel.addOrderService(
-                                        serviceId?.toInt() ?: 0,
-                                        pageId.value,
-                                        quantity.value.toInt()
-                                    )
-                                    showConfirmDialog.value = false
-                                    hasReadDescription.value = false
+                                    if (!accountViewModel.hasLogin.value) {
+                                        Toast.makeText(
+                                            context,
+                                            "برای ثبت سفارش باید وارد حساب کاربری خود شوید.",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        showConfirmDialog.value = false
+                                        hasReadDescription.value = false
+                                        return@Button
+                                    }
+
+                                    val currentWallet = accountViewModel.wallet.value
+                                    if (currentWallet >= totalPrice) {
+                                        accountViewModel.decreaseWallet(
+                                            context,
+                                            lifecycleOwner,
+                                            totalPrice,
+                                            onError = {
+                                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                            }
+                                        )
+                                        viewModel.addOrderService(
+                                            serviceId?.toInt() ?: 0,
+                                            pageId.value,
+                                            quantityValue
+                                        )
+                                        showConfirmDialog.value = false
+                                        hasReadDescription.value = false
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "موجودی کیف پول کافی نیست. لطفاً آن را شارژ کنید.",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        showConfirmDialog.value = false
+                                        navController.navigate(MyScreens.ShopScreen.route)
+                                    }
                                 },
                                 enabled = hasReadDescription.value
                             ) {
@@ -208,15 +235,21 @@ fun DetailScreen(serviceId: String?) {
                         title = { Text("تأیید ثبت سفارش") },
                         text = {
                             Column {
-                                Text("یادت باشه که توضیحات رو کامل بخونی تا چیزی رو اشتباه وارد نکنی. آیا مطمئنی که میخوای سفارش ثبت کنی؟")
+                                Text("آیا از ثبت این سفارش مطمئنی؟")
                                 Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    "قیمت نهایی سفارش: ${String.format("%,d", totalPrice)} تومان",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Checkbox(
                                         checked = hasReadDescription.value,
                                         onCheckedChange = { hasReadDescription.value = it }
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
-                                    Text("توضیحات رو خوندم")
+                                    Text("توضیحات را خواندم")
                                 }
                             }
                         }
@@ -226,7 +259,7 @@ fun DetailScreen(serviceId: String?) {
                 if (orderMessage != null) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = orderMessage,
+                        orderMessage,
                         color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                     )
                 }
@@ -237,37 +270,28 @@ fun DetailScreen(serviceId: String?) {
                         accountViewModel.addOrderNumber(
                             context,
                             lifecycleOwner,
-                            viewModel.orderId.value!!
+                            viewModel.orderId.value ?: return@LaunchedEffect
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Text(
-                    text = "مشخصات سرویس",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
-
-                DetailCard(title = "نام سرویس", value = detail.name)
-                DetailCard(title = "قیمت(هر هزار تا)", value = "${detail.rate} تومان")
+                Text("مشخصات سرویس", style = MaterialTheme.typography.headlineSmall)
+                DetailCard("نام سرویس", detail.name)
+                DetailCard("قیمت (هر هزار تا)", "${detail.rate} تومان")
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Card(
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceVariant),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "توضیحات",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        Text("توضیحات", style = MaterialTheme.typography.titleMedium)
                         Spacer(modifier = Modifier.height(8.dp))
-                        HtmlDescriptionView(htmlText = detail.desc)
+                        HtmlDescriptionView(detail.desc)
                     }
                 }
             }

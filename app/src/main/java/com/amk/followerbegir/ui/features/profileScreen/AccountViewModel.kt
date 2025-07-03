@@ -23,6 +23,7 @@ class AccountViewModel : ViewModel() {
     val wallet = mutableStateOf(0)
     val orderNumbers = mutableStateOf<List<Int>>(emptyList())
     val isLoading = mutableStateOf(false)
+    val isLoginCheckInProgress = mutableStateOf(true)
 
     fun handleSignInResult(intent: Intent?) {
         val account = intent?.let { BazaarSignIn.getSignedInAccountFromIntent(it) }
@@ -33,6 +34,7 @@ class AccountViewModel : ViewModel() {
     }
 
     fun getBazaarLogin(context: Context, owner: LifecycleOwner) {
+        isLoginCheckInProgress.value = true
         viewModelScope.launch(coroutineExceptionHandler) {
             BazaarSignIn.getLastSignedInAccount(context, owner) { response ->
                 val account = response?.data
@@ -40,6 +42,7 @@ class AccountViewModel : ViewModel() {
                     userID.value = account.accountId
                     hasLogin.value = true
                 }
+                isLoginCheckInProgress.value = false
             }
         }
     }

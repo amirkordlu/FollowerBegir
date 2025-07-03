@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,67 +63,76 @@ fun ProfileScreenPreview() {
     }
 }
 
-
 @Composable
 fun ProfileScreen() {
     val context = LocalContext.current
     val viewModel: AccountViewModel = viewModel()
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val navigation = getNavController()
 
-
-
-    if (!NetworkChecker(context).isInternetConnected) {
-        Toast.makeText(context, "اینترنت نداری :(", Toast.LENGTH_SHORT).show()
-    }
+    val isCheckingLogin = viewModel.isLoginCheckInProgress.value
+    val isLoggedIn = viewModel.hasLogin.value
 
     LaunchedEffect(Unit) {
-        // Get login
         viewModel.getBazaarLogin(context, lifecycleOwner)
     }
 
-    if (viewModel.hasLogin.value) {
-        // If logged in, navigate to the shop screen
-        navigation.navigate(MyScreens.ShopScreen.route) {
-            popUpTo(MyScreens.ShopScreen.route) { inclusive = true }
+    when {
+        isCheckingLogin -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+            }
         }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
 
-            LoginAnimation()
-
-            val bazaarSignInLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.StartActivityForResult()
-            ) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    viewModel.handleSignInResult(result.data)
+        isLoggedIn -> {
+            LaunchedEffect(Unit) {
+                navigation.navigate(MyScreens.ShopScreen.route) {
+                    popUpTo(MyScreens.ShopScreen.route) { inclusive = true }
                 }
             }
+        }
 
-            BazaarButton {
-                if (!viewModel.hasLogin.value) {
-                    val signInOption =
-                        BazaarSignInOptions.Builder(SignInOption.DEFAULT_SIGN_IN).build()
-                    val client = BazaarSignIn.getClient(context, signInOption)
-                    val intent = client.getSignInIntent()
+        else -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-                    bazaarSignInLauncher.launch(intent)
-                } else {
-                    Toast.makeText(context, "شما قبلاً وارد شده‌اید", Toast.LENGTH_SHORT).show()
+                LoginAnimation()
+
+                val bazaarSignInLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartActivityForResult()
+                ) { result ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        viewModel.handleSignInResult(result.data)
+                    }
                 }
-            }
 
-            LoginWithAccounts()
+                BazaarButton {
+                    if (!viewModel.hasLogin.value) {
+                        val signInOption =
+                            BazaarSignInOptions.Builder(SignInOption.DEFAULT_SIGN_IN).build()
+                        val client = BazaarSignIn.getClient(context, signInOption)
+                        val intent = client.getSignInIntent()
+
+                        bazaarSignInLauncher.launch(intent)
+                    } else {
+                        Toast.makeText(context, "شما قبلاً وارد شده‌اید", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                LoginWithAccounts()
+            }
         }
     }
 }
-
 
 @Composable
 fun BazaarButton(signInClicked: () -> Unit) {
