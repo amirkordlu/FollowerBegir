@@ -2,38 +2,25 @@ package com.amk.followerbegir.ui.features.detailScreen
 
 import android.text.method.LinkMovementMethod
 import android.widget.TextView
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import android.widget.Toast
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.text.HtmlCompat
+import com.amk.followerbegir.ui.features.profileScreen.AccountViewModel
 import com.amk.followerbegir.ui.theme.FollowerBegirTheme
 import dev.burnoo.cokoin.navigation.getNavViewModel
 
@@ -52,18 +39,25 @@ fun DetailScreenPreview() {
 @Composable
 fun DetailScreen(serviceId: String?) {
     val viewModel = getNavViewModel<DetailScreenViewModel>()
+    val accountViewModel = getNavViewModel<AccountViewModel>()
     val detail = viewModel.itemDetail.value
     val isLoading = viewModel.isLoading.value
     val isError = viewModel.isError.value
     val orderMessage = viewModel.orderMessage.value
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     val pageId = remember { mutableStateOf("") }
-    val selectedQuantity = remember { mutableStateOf<Int?>(null) }
+    val pageIdError = remember { mutableStateOf("") }
 
-    val chipOptions = listOf(50, 100, 200, 300, 500, 1000)
+    val quantity = remember { mutableStateOf("") }
+    val quantityError = remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-        if (detail == null && serviceId != null) {
+    val showConfirmDialog = remember { mutableStateOf(false) }
+    val hasReadDescription = remember { mutableStateOf(false) }
+
+    LaunchedEffect(serviceId) {
+        if (serviceId != null) {
             viewModel.loadServiceDetail(serviceId)
         }
     }
@@ -101,79 +95,132 @@ fun DetailScreen(serviceId: String?) {
 
                 OutlinedTextField(
                     value = pageId.value,
-                    onValueChange = { pageId.value = it },
-                    label = { Text("آیدی پیج") },
-                    modifier = Modifier.fillMaxWidth()
+                    onValueChange = {
+                        pageId.value = it
+                        pageIdError.value = if (it.any { ch -> ch in 'آ'..'ی' }) {
+                            "لطفاً فقط از حروف انگلیسی، اعداد یا کاراکترهای مجاز استفاده کنید"
+                        } else ""
+                    },
+                    isError = pageIdError.value.isNotEmpty(),
+                    label = { Text("آیدی پیج یا لینک") },
+                    supportingText = {
+                        if (pageIdError.value.isNotEmpty()) {
+                            Text(text = pageIdError.value, color = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Text("تعداد سفارش:", style = MaterialTheme.typography.titleSmall)
-                Spacer(modifier = Modifier.height(6.dp))
-
-                val firstRow = chipOptions.take(3)
-                val secondRow = chipOptions.drop(3)
-
-                Row(
+                OutlinedTextField(
+                    value = quantity.value,
+                    onValueChange = {
+                        quantity.value = it
+                        quantityError.value = if (it.isNotBlank()) {
+                            val intVal = it.toIntOrNull()
+                            if (intVal == null || intVal !in detail.min..detail.max) {
+                                "تعداد باید بین ${detail.min} تا ${detail.max} باشد"
+                            } else ""
+                        } else ""
+                    },
+                    isError = quantityError.value.isNotEmpty(),
+                    label = { Text("تعداد سفارش (${detail.min} تا ${detail.max})") },
+                    supportingText = {
+                        if (quantityError.value.isNotEmpty()) {
+                            Text(
+                                text = quantityError.value,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    firstRow.forEach { option ->
-                        AssistChip(
-                            onClick = { selectedQuantity.value = option },
-                            label = { Text("$option") },
-                            shape = RoundedCornerShape(20.dp),
-                            colors = if (selectedQuantity.value == option) {
-                                AssistChipDefaults.assistChipColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    labelColor = MaterialTheme.colorScheme.onPrimary
-                                )
-                            } else {
-                                AssistChipDefaults.assistChipColors()
-                            }
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    secondRow.forEach { option ->
-                        AssistChip(
-                            onClick = { selectedQuantity.value = option },
-                            label = { Text("$option") },
-                            shape = RoundedCornerShape(20.dp),
-                            colors = if (selectedQuantity.value == option) {
-                                AssistChipDefaults.assistChipColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    labelColor = MaterialTheme.colorScheme.onPrimary
-                                )
-                            } else {
-                                AssistChipDefaults.assistChipColors()
-                            }
-                        )
-                    }
-                }
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    )
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = {
-                        viewModel.addOrderService(
-                            serviceId?.toInt() ?: 0,
-                            pageId.value,
-                            selectedQuantity.value ?: 0
-                        )
+                        val isPageIdValid = pageId.value.isNotBlank() && pageIdError.value.isEmpty()
+                        val isQuantityValid = quantity.value.toIntOrNull()?.let {
+                            it in detail.min..detail.max
+                        } == true
+
+                        if (!isPageIdValid || !isQuantityValid) {
+                            if (pageId.value.isBlank()) pageIdError.value =
+                                "لطفاً آیدی را وارد کنید"
+                            if (quantity.value.isBlank()) quantityError.value =
+                                "لطفاً تعداد سفارش را وارد کنید"
+                            Toast.makeText(
+                                context,
+                                "لطفاً موارد وارد شده را بررسی کنید",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            showConfirmDialog.value = true
+                        }
                     },
-                    enabled = pageId.value.isNotBlank() && selectedQuantity.value != null,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("ثبت سفارش")
+                }
+
+                if (showConfirmDialog.value) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            showConfirmDialog.value = false
+                            hasReadDescription.value = false
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    viewModel.addOrderService(
+                                        serviceId?.toInt() ?: 0,
+                                        pageId.value,
+                                        quantity.value.toInt()
+                                    )
+                                    showConfirmDialog.value = false
+                                    hasReadDescription.value = false
+                                },
+                                enabled = hasReadDescription.value
+                            ) {
+                                Text("آره، ثبت کن")
+                            }
+                        },
+                        dismissButton = {
+                            Button(onClick = {
+                                showConfirmDialog.value = false
+                                hasReadDescription.value = false
+                            }) {
+                                Text("خیر")
+                            }
+                        },
+                        title = { Text("تأیید ثبت سفارش") },
+                        text = {
+                            Column {
+                                Text("یادت باشه که توضیحات رو کامل بخونی تا چیزی رو اشتباه وارد نکنی. آیا مطمئنی که میخوای سفارش ثبت کنی؟")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Checkbox(
+                                        checked = hasReadDescription.value,
+                                        onCheckedChange = { hasReadDescription.value = it }
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("توضیحات رو خوندم")
+                                }
+                            }
+                        }
+                    )
                 }
 
                 if (orderMessage != null) {
@@ -182,6 +229,17 @@ fun DetailScreen(serviceId: String?) {
                         text = orderMessage,
                         color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                     )
+                }
+
+                LaunchedEffect(orderMessage) {
+                    if (orderMessage == "✅ سفارش با موفقیت ثبت شد" && !viewModel.isOrderSaved.value) {
+                        viewModel.isOrderSaved.value = true
+                        accountViewModel.addOrderNumber(
+                            context,
+                            lifecycleOwner,
+                            viewModel.orderId.value!!
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -193,12 +251,7 @@ fun DetailScreen(serviceId: String?) {
                 )
 
                 DetailCard(title = "نام سرویس", value = detail.name)
-                DetailCard(title = "شناسه سرویس", value = detail.service)
-                DetailCard(title = "حداقل سفارش", value = detail.min.toString())
-                DetailCard(title = "حداکثر سفارش", value = detail.max.toString())
-                DetailCard(title = "قیمت", value = "${detail.rate} تومان")
-                DetailCard(title = "قابل لغو", value = if (detail.cancel) "بله" else "خیر")
-                DetailCard(title = "قابل شارژ مجدد", value = if (detail.refill) "بله" else "خیر")
+                DetailCard(title = "قیمت(هر هزار تا)", value = "${detail.rate} تومان")
 
                 Spacer(modifier = Modifier.height(16.dp))
 

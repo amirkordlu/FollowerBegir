@@ -1,6 +1,5 @@
 package com.amk.followerbegir.ui.features.detailScreen
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,14 +19,19 @@ class DetailScreenViewModel(
     val isLoading = mutableStateOf(false)
     val isError = mutableStateOf(false)
     val orderMessage = mutableStateOf<String?>(null)
+    val orderId = mutableStateOf<Int?>(null)
+    val isOrderSaved = mutableStateOf(false)
+    private var loadedServiceId: String? = null
 
     fun loadServiceDetail(serviceId: String) {
+        if (loadedServiceId == serviceId && itemDetail.value != null) return
         viewModelScope.launch(coroutineExceptionHandler) {
             isLoading.value = true
             isError.value = false
             try {
                 val allItems = serviceRepository.getAllItemsList()
                 itemDetail.value = allItems.find { it.service == serviceId }
+                loadedServiceId = serviceId
             } catch (_: Exception) {
                 isError.value = true
             } finally {
@@ -35,6 +39,7 @@ class DetailScreenViewModel(
             }
         }
     }
+
 
     fun addOrderService(serviceId: Int, link: String, quantity: Int) {
         viewModelScope.launch(coroutineExceptionHandler) {
@@ -45,6 +50,8 @@ class DetailScreenViewModel(
                 val result = orderRepository.addOrderService(serviceId, link, quantity, 1)
                 if (result.status == "success") {
                     orderMessage.value = "✅ سفارش با موفقیت ثبت شد"
+                    orderId.value = result.order
+                    isOrderSaved.value = false
                 } else {
                     orderMessage.value = "❌ ثبت سفارش ناموفق بود"
                     isError.value = true
