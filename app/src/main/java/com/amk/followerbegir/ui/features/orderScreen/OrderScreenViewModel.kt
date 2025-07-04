@@ -13,11 +13,21 @@ class OrderScreenViewModel(
 ) : ViewModel() {
 
     val ordersStatusMap = mutableStateOf<Map<String, OrderStatusResponse>>(emptyMap())
+    val isLoading = mutableStateOf(false)
+    val isError = mutableStateOf(false)
 
     fun getOrdersStatus(orders: String) {
         viewModelScope.launch(coroutineExceptionHandler) {
-            val data = orderRepository.getOrdersStatus(orders)
-            ordersStatusMap.value = data
+            try {
+                isLoading.value = true
+                isError.value = false
+                val data = orderRepository.getOrdersStatus(orders)
+                ordersStatusMap.value = data
+            } catch (_: Exception) {
+                isError.value = true
+            } finally {
+                isLoading.value = false
+            }
         }
     }
 }

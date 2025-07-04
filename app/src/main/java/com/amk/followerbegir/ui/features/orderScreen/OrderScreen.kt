@@ -1,8 +1,6 @@
 package com.amk.followerbegir.ui.features.orderScreen
 
 import android.annotation.SuppressLint
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,10 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.amk.followerbegir.model.data.OrderStatusResponse
@@ -57,17 +52,21 @@ fun OrderScreen() {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    val isLoading = accountViewModel.isLoading.value
-    val orders = accountViewModel.orderNumbers.value
+    val isAccountLoading = accountViewModel.isLoading.value
+    val orderNumbers = accountViewModel.orderNumbers.value
     val orderStatuses = orderViewModel.ordersStatusMap.value
+    val isOrderLoading = orderViewModel.isLoading.value
+    val isOrderError = orderViewModel.isError.value
 
     LaunchedEffect(Unit) {
-        accountViewModel.loadUserData(context, lifecycleOwner)
+        if (orderNumbers.isEmpty()) {
+            accountViewModel.loadUserData(context, lifecycleOwner)
+        }
     }
 
-    LaunchedEffect(orders) {
-        if (orders.isNotEmpty()) {
-            val joinedOrders = orders.joinToString(",")
+    LaunchedEffect(orderNumbers) {
+        if (orderNumbers.isNotEmpty() && orderStatuses.isEmpty()) {
+            val joinedOrders = orderNumbers.joinToString(",")
             orderViewModel.getOrdersStatus(joinedOrders)
         }
     }
@@ -78,13 +77,18 @@ fun OrderScreen() {
             .padding(16.dp)
     ) {
         when {
-            isLoading -> {
-                CircularProgressIndicator(
+            isAccountLoading || isOrderLoading -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+
+            isOrderError -> {
+                Text(
+                    text = "خطا در دریافت وضعیت سفارش‌ها",
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
 
-            orders.isEmpty() -> {
+            orderNumbers.isEmpty() -> {
                 Text(
                     text = "هیچ سفارشی ثبت نشده است.",
                     modifier = Modifier.align(Alignment.Center)
