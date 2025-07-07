@@ -7,6 +7,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.sp
 import com.amk.followerbegir.R
 
@@ -45,17 +46,18 @@ val bodyLargeCard = TextStyle(
 )
 
 val bodyMediumCard = TextStyle(
-    fontSize = 18.sp,
+    fontSize = 16.sp,
     fontFamily = FontFamily(Font(R.font.dana_medium)),
     fontWeight = FontWeight(500),
-    color = Color(0xFFFFCCB9),
+    color = Color(0xFF000000),
     textAlign = TextAlign.Center,
+    textDirection = TextDirection.Rtl
 )
 
 val bodySmallCard = TextStyle(
     fontSize = 14.sp,
     fontFamily = FontFamily(Font(R.font.dana_medium)),
     fontWeight = FontWeight(500),
-    color = Color(0xFFFFFFFF),
+    color = Color(0xFF000000),
     textAlign = TextAlign.Center,
 )
