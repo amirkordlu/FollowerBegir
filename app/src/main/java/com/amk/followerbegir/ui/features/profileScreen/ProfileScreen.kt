@@ -7,6 +7,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -34,8 +37,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
@@ -213,6 +218,7 @@ fun ProfileCard(
     Card(
         modifier = modifier
             .height(120.dp)
+            .clip(RoundedCornerShape(16.dp))
             .clickable { onClick.invoke() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
@@ -246,46 +252,57 @@ fun ProfileCard(
 
 @Composable
 fun ProfileListItem(
-    text: String, icon: Int, onClick: () -> Unit
+    text: String,
+    icon: Int,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(86.dp)
-            .padding(vertical = 8.dp, horizontal = 14.dp)
-            .clickable { onClick.invoke() },
+            .padding(vertical = 8.dp, horizontal = 14.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(
+                    onClick = onClick,
+                    indication = rememberRipple(bounded = true, color = Color.Gray),
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+                .fillMaxSize()
         ) {
-
-            Box(
+            Row(
                 modifier = Modifier
-                    .size(40.dp)
-                    .background(Color(0xFFEDEEF0), shape = CircleShape),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .padding(horizontal = 18.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Image(
-                    painter = painterResource(icon),
-                    contentDescription = null
+
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(Color(0xFFEDEEF0), shape = CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(icon),
+                        contentDescription = null
+                    )
+                }
+
+                Text(
+                    text = text,
+                    style = bodySmallCard,
+                    color = Color(0xFF1B1B1B),
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Right
                 )
             }
-
-            Text(
-                text = text,
-                style = bodySmallCard,
-                color = Color(0xFF1B1B1B),
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Right
-            )
-
         }
     }
 }

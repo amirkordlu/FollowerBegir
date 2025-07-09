@@ -102,7 +102,7 @@ fun MainScreen() {
     ) { paddingValues ->
         KoinNavHost(
             navController = navigation,
-            startDestination = MyScreens.ProfileScreen.route,
+            startDestination = MyScreens.MainScreen.route,
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(MyScreens.MainScreen.route) {
