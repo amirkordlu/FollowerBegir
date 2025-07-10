@@ -1,28 +1,31 @@
 package com.amk.followerbegir.ui.features.profileScreen
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivityResultRegistryOwner
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,12 +36,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -48,10 +55,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.amk.followerbegir.R
 import com.amk.followerbegir.ui.theme.FollowerBegirTheme
 import com.amk.followerbegir.ui.theme.Typography
+import com.amk.followerbegir.ui.theme.bodyMediumCard
 import com.amk.followerbegir.ui.theme.bodySmallCard
 import com.amk.followerbegir.util.MyScreens
-import com.amk.followerbegir.util.NetworkChecker
 import com.amk.followerbegir.util.RSA_KEY
+import com.amk.followerbegir.util.formatBalanceWithCommas
+import com.amk.followerbegir.util.toPersianDigits
 import com.maxkeppeker.sheets.core.CoreDialog
 import com.maxkeppeker.sheets.core.models.CoreSelection
 import com.maxkeppeker.sheets.core.models.base.Header
@@ -71,12 +80,13 @@ fun ShopScreenPreview() {
     }
 }
 
+@SuppressLint("ResourceAsColor")
 @Composable
 fun ShopScreen() {
     val navigation = getNavController()
     BackHandler(enabled = true) {
-        navigation.navigate(MyScreens.MainScreen.route) {
-            popUpTo(MyScreens.MainScreen.route) {
+        navigation.navigate(MyScreens.ProfileScreen.route) {
+            popUpTo(MyScreens.ProfileScreen.route) {
                 inclusive = true
             }
         }
@@ -122,63 +132,66 @@ fun ShopScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(color = Color(0xFFF5F7FA)),
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Row(
-            Modifier
-                .align(Alignment.Start)
-                .padding(start = 16.dp, bottom = 8.dp, top = 12.dp)
-                .background(
-                    color = Color(0xFF7E84F9),
-                    shape = RoundedCornerShape(size = 16.dp)
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+        ElevatedCard(
+            modifier = Modifier
+                .align(Alignment.End)
+                .height(76.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            onClick = { },
+            colors = CardDefaults.cardColors(Color(0xFFFFFFFF)),
+            shape = RoundedCornerShape(30.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-
-            Image(
-                painterResource(R.drawable.ic_coin),
-                null,
+            Row(
                 modifier = Modifier
-                    .size(44.dp)
-                    .padding(start = 8.dp, top = 4.dp, bottom = 4.dp, end = 4.dp)
-            )
+                    .fillMaxHeight()
+                    .padding(horizontal = 12.dp)
+                    .wrapContentSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
 
-            Text(
-                text = when {
+                val walletText = when {
                     viewModel.isLoading.value -> {
-                        "در حال بارگذاری..."
-                    }
-
-//                    viewModel.points.value == null -> {
-//                        viewModel.addPoints(context, lifecycleOwner, 2)
-//                        Toast.makeText(
-//                            context,
-//                            "به مناسبت ورود به برنامه 2 تا سکه مهمون ما باش :)",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                        "2 امتیاز گرفتی"
-//                    }
-
-                    !NetworkChecker(context).isInternetConnected -> {
-                        ":( اینترنت نداری"
+                        buildAnnotatedString {
+                            append("...")
+                        }
                     }
 
                     else -> {
                         val currentPoints = viewModel.wallet.value
-                        "موجودی کیف پول: $currentPoints"
+                            .formatBalanceWithCommas()
+                            .toPersianDigits()
+                        buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = Color(0xFF383838))) {
+                                append("موجودی کیف پول: ")
+                            }
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append("$currentPoints تومان")
+                            }
+                        }
                     }
-                },
-                style = Typography.bodyMedium,
-                color = Color.White,
-                fontSize = 18.sp,
-                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, end = 12.dp)
-            )
+                }
 
+                Text(
+                    text = walletText,
+                    style = bodySmallCard,
+                )
+
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_shop_wallet),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(30.dp),
+                    tint = Color(0xFFF59E0B)
+                )
+
+            }
         }
 
         Row(
@@ -217,7 +230,12 @@ fun ShopScreen() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                }, R.drawable.ic_coin, "خرید 25 سکه", "119 هزار تومان", true, "٪3 تخفیف"
+                },
+                "۱۰,۰۰۰ تومان",
+                Color(0xFFD6EEFF),
+                Color(0xFF00ADEF),
+                false,
+                ""
             )
 
             BuyCoinCard(
@@ -248,7 +266,12 @@ fun ShopScreen() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                }, R.drawable.ic_coin, "خرید 10 سکه", "49 هزار تومان", false, ""
+                },
+                "۵,۰۰۰ تومان",
+                Color(0xFFD5FAF0),
+                Color(0xFF00C2A8),
+                false,
+                ""
             )
 
         }
@@ -289,7 +312,11 @@ fun ShopScreen() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                }, R.drawable.ic_coin, "خرید 100 سکه", "399 هزار تومان", true, "٪18 تخفیف"
+                }, "۵۰,۰۰۰ تومان",
+                Color(0xFFFFE0E0),
+                Color(0xFFF44336),
+                false,
+                ""
             )
 
             BuyCoinCard(
@@ -320,7 +347,11 @@ fun ShopScreen() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                }, R.drawable.ic_coin, "خرید 50 سکه", "229 هزار تومان", true, "٪6 تخفیف"
+                }, "۲۰,۰۰۰ تومان",
+                Color(0xFFE0E9FF),
+                Color(0xFF3D5AFE),
+                false,
+                ""
             )
 
         }
@@ -362,11 +393,11 @@ fun ShopScreen() {
                         ).show()
                     }
                 },
-                R.drawable.ic_coin,
-                "خرید 500 سکه",
-                "1 میلیون و 799 هزار تومان",
-                true,
-                "٪25 تخفیف"
+                "۲۰۰,۰۰۰ تومان",
+                Color(0xFFECFFD8),
+                Color(0xFF7CB342),
+                false,
+                ""
             )
 
             BuyCoinCard(
@@ -397,7 +428,173 @@ fun ShopScreen() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                }, R.drawable.ic_coin, "خرید 200 سکه", "749 هزار تومان", true, "٪24 تخفیف"
+                }, "۱۰۰,۰۰۰ تومان",
+                Color(0xFFFFF4D6),
+                Color(0xFFFFA726),
+                false,
+                ""
+            )
+
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 2.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            BuyCoinCard(
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 10.dp),
+                {
+                    if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
+                        paymentViewModel.startPurchase(
+                            "500coin",
+                            "purchasePayload",
+                            activityResultRegistry,
+                            onFailure = {
+                                Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
+                            },
+                            onSuccess = { purchaseEntity ->
+                                viewModel.increaseWallet(context, lifecycleOwner, 500)
+                                paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
+                                    purchaseInfo.value =
+                                        "token: ${purchaseEntity.purchaseToken}"
+                                    purchaseDialogState.show()
+                                }, {})
+                            })
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "اول باید به اینترنت وصل باشی تا بتونی خرید کنی",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                },
+                "۵۰۰,۰۰۰ تومان",
+                Color(0xFFE0F7FA),
+                Color(0xFF0097A7),
+                false,
+                ""
+            )
+
+            BuyCoinCard(
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 10.dp),
+                {
+                    if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
+                        paymentViewModel.startPurchase(
+                            "200coin",
+                            "purchasePayload",
+                            activityResultRegistry,
+                            onFailure = {
+                                Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
+                            },
+                            onSuccess = { purchaseEntity ->
+                                viewModel.increaseWallet(context, lifecycleOwner, 200)
+                                paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
+                                    purchaseInfo.value =
+                                        "token: ${purchaseEntity.purchaseToken}"
+                                    purchaseDialogState.show()
+                                }, {})
+                            })
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "اول باید به اینترنت وصل باشی تا بتونی خرید کنی",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }, "۳۰۰,۰۰۰ تومان",
+                Color(0xFFFFE6F0),
+                Color(0xFFE91E63),
+                false,
+                ""
+            )
+
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 2.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            BuyCoinCard(
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 10.dp),
+                {
+                    if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
+                        paymentViewModel.startPurchase(
+                            "500coin",
+                            "purchasePayload",
+                            activityResultRegistry,
+                            onFailure = {
+                                Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
+                            },
+                            onSuccess = { purchaseEntity ->
+                                viewModel.increaseWallet(context, lifecycleOwner, 500)
+                                paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
+                                    purchaseInfo.value =
+                                        "token: ${purchaseEntity.purchaseToken}"
+                                    purchaseDialogState.show()
+                                }, {})
+                            })
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "اول باید به اینترنت وصل باشی تا بتونی خرید کنی",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                },
+                "۲,۰۰۰,۰۰۰ تومان",
+                Color(0xFFF3E5F5),
+                Color(0xFF7E57C2),
+                false,
+                ""
+            )
+
+            BuyCoinCard(
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 10.dp),
+                {
+                    if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
+                        paymentViewModel.startPurchase(
+                            "200coin",
+                            "purchasePayload",
+                            activityResultRegistry,
+                            onFailure = {
+                                Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
+                            },
+                            onSuccess = { purchaseEntity ->
+                                viewModel.increaseWallet(context, lifecycleOwner, 200)
+                                paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
+                                    purchaseInfo.value =
+                                        "token: ${purchaseEntity.purchaseToken}"
+                                    purchaseDialogState.show()
+                                }, {})
+                            })
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "اول باید به اینترنت وصل باشی تا بتونی خرید کنی",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }, "۱,۰۰۰,۰۰۰ تومان",
+                Color(0xFFE8EAF6),
+                Color(0xFF3949AB),
+                false,
+                ""
             )
 
         }
@@ -409,7 +606,7 @@ fun ShopScreen() {
 //                   sendEmail(context,"amir.kordlu@gmail.com")
                 },
             text = "نیاز به پشتیبانی داری؟ کلیک کن",
-            style = Typography.bodyMedium
+            style = bodySmallCard
         )
 
     }
@@ -420,54 +617,53 @@ fun ShopScreen() {
 fun BuyCoinCard(
     modifier: Modifier = Modifier,
     onCardClicked: () -> Unit,
-    cardImage: Int,
     mainTextCard: String,
-    secondaryTextCard: String,
+    circleBackgroundColor: Color,
+    iconColor: Color,
     hasOff: Boolean,
     offValue: String
 ) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
+            defaultElevation = 2.dp
         ),
         modifier = modifier
-            .fillMaxWidth(0.5f)
+            .fillMaxWidth(0.4f)
             .height(230.dp)
-            .padding(vertical = 10.dp),
+            .padding(vertical = 8.dp),
         onClick = { onCardClicked.invoke() },
-        colors = CardDefaults.cardColors(Color(0xFF7E84F9))
+        colors = CardDefaults.cardColors(Color(0xFFFFFFFF)),
+        shape = RoundedCornerShape(20.dp)
     ) {
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(cardImage),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(54.dp)
+
+            AddCartCircleIcon(
+                ImageVector.vectorResource(R.drawable.ic_add_shopping_cart),
+                circleBackgroundColor,
+                iconColor
             )
 
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Text(
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = 18.dp, bottom = 4.dp),
                     text = mainTextCard,
-                    style = Typography.bodyMedium,
-                    fontSize = 18.sp,
-                    color = Color(0xFFFFFFFF)
+                    style = bodyMediumCard,
+                    color = Color(0xFF000000),
+                    fontWeight = FontWeight.Bold
                 )
 
-                Spacer(modifier = Modifier.padding(vertical = 6.dp))
-
                 Text(
-                    modifier = Modifier.padding(top = 4.dp, bottom = 8.dp),
-                    text = secondaryTextCard,
-                    style = Typography.bodyMedium,
-                    color = Color(0xFFFFFFFF)
+                    modifier = Modifier.padding(top = 4.dp),
+                    text = "شارژ کیف پول",
+                    style = bodySmallCard,
+                    fontSize = 12.sp,
+                    color = Color(0xFF595959)
                 )
 
                 if (hasOff) {
@@ -489,6 +685,27 @@ fun BuyCoinCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun AddCartCircleIcon(
+    icon: ImageVector,
+    backgroundColor: Color,
+    iconColor: Color
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(80.dp)
+            .background(color = backgroundColor, shape = CircleShape)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = iconColor,
+            modifier = Modifier.size(36.dp)
+        )
     }
 }
 

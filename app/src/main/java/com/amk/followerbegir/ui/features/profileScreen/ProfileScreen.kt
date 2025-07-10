@@ -1,13 +1,14 @@
 package com.amk.followerbegir.ui.features.profileScreen
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,13 +43,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -59,10 +60,14 @@ import com.amk.followerbegir.ui.theme.FollowerBegirTheme
 import com.amk.followerbegir.ui.theme.Typography
 import com.amk.followerbegir.ui.theme.bodyMediumCard
 import com.amk.followerbegir.ui.theme.bodySmallCard
+import com.amk.followerbegir.util.MyScreens
+import com.amk.followerbegir.util.formatBalanceWithCommas
+import com.amk.followerbegir.util.toPersianDigits
 import com.farsitel.bazaar.core.BazaarSignIn
 import com.farsitel.bazaar.core.model.BazaarSignInOptions
 import com.farsitel.bazaar.core.model.SignInOption
 import dev.burnoo.cokoin.navigation.getNavController
+import androidx.core.net.toUri
 
 @Preview(showBackground = true)
 @Composable
@@ -88,6 +93,7 @@ fun ProfileScreen() {
 
     LaunchedEffect(Unit) {
         viewModel.getBazaarLogin(context, lifecycleOwner)
+        viewModel.loadUserData(context, lifecycleOwner)
     }
 
     when {
@@ -102,11 +108,6 @@ fun ProfileScreen() {
         }
 
         isLoggedIn -> {
-//            LaunchedEffect(Unit) {
-//                navigation.navigate(MyScreens.ShopScreen.route) {
-//                    popUpTo(MyScreens.ShopScreen.route) { inclusive = true }
-//                }
-//            }
 
             Column(
                 modifier = Modifier
@@ -131,7 +132,18 @@ fun ProfileScreen() {
                         backgroundColor = Color(0xFFE6F7EC),
                         iconColor = Color(0xFF00C853),
                         icon = R.drawable.ic_wallet_transparent,
-                        text = "120 هزار تومان"
+                        text = when {
+                            viewModel.isLoading.value -> {
+                                "..."
+                            }
+
+                            else -> {
+                                val currentPoints = viewModel.wallet.value.formatBalanceWithCommas()
+                                    .toPersianDigits()
+                                "$currentPoints تومان"
+                            }
+
+                        }
                     ) {}
 
                     ProfileCard(
@@ -142,26 +154,33 @@ fun ProfileScreen() {
                         iconColor = Color(0xFF1E88E5),
                         icon = R.drawable.ic_add_wallet_transparent,
                         text = "افزایش موجودی"
-                    ) {}
+                    ) {
+                        navigation.navigate(MyScreens.ShopScreen.route) {
+                            popUpTo(MyScreens.ShopScreen.route) { inclusive = true }
+                        }
+                    }
 
                 }
 
                 Column {
 
-                    ProfileListItem("افزایش موجودی", R.drawable.ic_add_wallet_transparent) {
-                        Toast.makeText(context, "افزایش موجودی کلیک شد", Toast.LENGTH_SHORT).show()
+                    ProfileListItem("ارسال نظر", R.drawable.ic_star) {
+                        val intent = Intent(Intent.ACTION_EDIT)
+                        intent.setData(("bazaar://details?id=" + "com.amk.followerbegir").toUri())
+                        intent.setPackage("com.farsitel.bazaar")
+                        startActivity(context, intent, null)
                     }
 
-                    ProfileListItem("تنظیمات", R.drawable.ic_setting) {
-                        Toast.makeText(context, "تنظیمات کلیک شد", Toast.LENGTH_SHORT).show()
+                    ProfileListItem("سوالات متداول", R.drawable.ic_faq) {
+
                     }
 
-                    ProfileListItem("ارسال بازخورد", R.drawable.ic_feedback) {
-                        Toast.makeText(context, "ارسال بازخورد کلیک شد", Toast.LENGTH_SHORT).show()
+                    ProfileListItem("پشتیبانی", R.drawable.ic_support) {
+
                     }
 
                     ProfileListItem("درباره ما", R.drawable.ic_about) {
-                        Toast.makeText(context, "درباره ما کلیک شد", Toast.LENGTH_SHORT).show()
+
                     }
 
                 }
