@@ -180,7 +180,7 @@ fun ProfileScreen() {
                     }
 
                     ProfileListItem("درباره ما", R.drawable.ic_about) {
-
+                        navigation.navigate(MyScreens.AboutScreen.route)
                     }
 
                 }

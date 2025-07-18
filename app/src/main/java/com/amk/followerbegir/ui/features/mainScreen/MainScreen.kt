@@ -21,6 +21,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.amk.followerbegir.ui.features.aboutScreen.AboutScreen
 import com.amk.followerbegir.ui.features.detailScreen.DetailScreen
 import com.amk.followerbegir.ui.features.homeScreen.HomeScreen
 import com.amk.followerbegir.ui.features.orderScreen.OrderScreen
@@ -102,7 +103,7 @@ fun MainScreen() {
     ) { paddingValues ->
         KoinNavHost(
             navController = navigation,
-            startDestination = MyScreens.ShopScreen.route,
+            startDestination = MyScreens.MainScreen.route,
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(MyScreens.MainScreen.route) {
@@ -116,6 +117,9 @@ fun MainScreen() {
             }
             composable(MyScreens.ShopScreen.route) {
                 ShopScreen()
+            }
+            composable(MyScreens.AboutScreen.route) {
+                AboutScreen()
             }
             composable(
                 route = MyScreens.DetailScreen.route,
