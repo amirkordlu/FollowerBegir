@@ -53,6 +53,24 @@ fun getPersianStatus(status: String?): String {
     }
 }
 
+data class StatusIconInfo(val iconRes: Int, val tint: Color)
+
+fun getStatusIconInfo(status: String?): StatusIconInfo {
+    return when (status) {
+        "Completed" -> StatusIconInfo(R.drawable.ic_check, Color(0xFF4CAF50))
+        "Pending", "processing" -> StatusIconInfo(R.drawable.ic_loading, Color(0xFFFF9800))
+        "Canceled" -> StatusIconInfo(R.drawable.ic_cancel, Color(0xFFF44336))
+        else -> StatusIconInfo(R.drawable.ic_info, Color.Gray)
+    }
+}
+
+fun getRemain(remain: Any?): Any? {
+    return when (remain) {
+        null -> "نامشخص"
+        else -> remain
+    }
+}
+
 fun String.toPersianDigits(): String {
     val englishDigits = listOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
     val persianDigits = listOf('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹')

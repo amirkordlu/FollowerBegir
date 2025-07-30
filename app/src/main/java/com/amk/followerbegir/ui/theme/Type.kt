@@ -41,7 +41,7 @@ val bodyLargeCard = TextStyle(
     fontSize = 22.sp,
     fontFamily = FontFamily(Font(R.font.dana_medium)),
     fontWeight = FontWeight(600),
-    color = Color(0xFFFFFFFF),
+    color = Color(0xFF000000),
     textAlign = TextAlign.Center,
 )
 
