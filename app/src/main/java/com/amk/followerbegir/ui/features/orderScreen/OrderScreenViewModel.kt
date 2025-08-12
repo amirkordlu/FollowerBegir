@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amk.followerbegir.model.data.OrderStatusResponse
 import com.amk.followerbegir.model.repository.orderStatusRepository.OrderStatusRepository
-import com.amk.followerbegir.util.coroutineExceptionHandler
 import kotlinx.coroutines.launch
 
 class OrderScreenViewModel(
@@ -17,14 +16,16 @@ class OrderScreenViewModel(
     val isError = mutableStateOf(false)
 
     fun getOrdersStatus(orders: String) {
-        viewModelScope.launch(coroutineExceptionHandler) {
+        viewModelScope.launch {
+            isLoading.value = true
+            isError.value = false
             try {
-                isLoading.value = true
-                isError.value = false
                 val data = orderRepository.getOrdersStatus(orders)
                 ordersStatusMap.value = data
-            } catch (_: Exception) {
+            } catch (e: Exception) {
                 isError.value = true
+                ordersStatusMap.value = emptyMap()
+                e.printStackTrace()
             } finally {
                 isLoading.value = false
             }
