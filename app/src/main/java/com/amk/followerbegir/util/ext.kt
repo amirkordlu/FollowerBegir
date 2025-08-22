@@ -87,3 +87,22 @@ fun Int.toPersianDigits(): String = this.toString().toPersianDigits()
 fun Int.formatBalanceWithCommas(): String {
     return String.format("%,d", this)
 }
+
+val iconColorPairs = listOf(
+    Pair(Color(0xFFE8EAF6), Color(0xFF3949AB)),
+    Pair(Color(0xFFF3E5F5), Color(0xFF7E57C2)),
+    Pair(Color(0xFFFFE6F0), Color(0xFFE91E63)),
+    Pair(Color(0xFFE0F7FA), Color(0xFF0097A7)),
+    Pair(Color(0xFFFFF4D6), Color(0xFFFFA726)),
+    Pair(Color(0xFFECFFD8), Color(0xFF7CB342)),
+    Pair(Color(0xFFE0E9FF), Color(0xFF3D5AFE)),
+    Pair(Color(0xFFFFE0E0), Color(0xFFF44336)),
+    Pair(Color(0xFFD5FAF0), Color(0xFF00C2A8)),
+    Pair(Color(0xFFD6EEFF), Color(0xFF00ADEF)),
+    Pair(Color(0xFFE8F5E9), Color(0xFF43A047)),
+    Pair(Color(0xFFFFF3E0), Color(0xFFFB8C00)),
+    Pair(Color(0xFFEFEBE9), Color(0xFF6D4C41)),
+    Pair(Color(0xFFECEFF1), Color(0xFF546E7A)),
+    Pair(Color(0xFFFBE9E7), Color(0xFFF4511E)),
+    Pair(Color(0xFFEDE7F6), Color(0xFF5E35B1))
+)

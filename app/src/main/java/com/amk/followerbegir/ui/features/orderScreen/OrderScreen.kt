@@ -451,7 +451,7 @@ fun ErrorSection(onClick: () -> Unit) {
         Spacer(modifier = Modifier.padding(12.dp))
 
         Text(
-            text = "خطا در دریافت لیست سفارشات",
+            text = "خطا در دریافت اطلاعات",
             style = bodyMediumCard,
             fontSize = 18.sp,
             textAlign = TextAlign.Center

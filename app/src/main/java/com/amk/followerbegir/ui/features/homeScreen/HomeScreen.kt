@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -66,6 +67,7 @@ import com.amk.followerbegir.util.MyScreens
 import com.amk.followerbegir.util.NetworkChecker
 import com.amk.followerbegir.util.allowedServices
 import com.amk.followerbegir.util.formatBalanceWithCommas
+import com.amk.followerbegir.util.iconColorPairs
 import com.amk.followerbegir.util.toPersianDigits
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
@@ -90,11 +92,13 @@ fun HomeScreen() {
     val isError = viewModel.isError.value
     var selectedCategory by remember { mutableStateOf("همه") }
     val context = LocalContext.current
+
     LaunchedEffect(key1 = Unit) {
         if (services.isEmpty()) {
             viewModel.getAllItemsService()
         }
     }
+
     val baseFilteredServices = services.filter { it.service in allowedServices }
     val categories = baseFilteredServices.map { it.category }.distinct()
     val finalFilteredServices = if (selectedCategory == "همه") {
@@ -102,17 +106,24 @@ fun HomeScreen() {
     } else {
         baseFilteredServices.filter { it.category == selectedCategory }
     }
+
+    // Get random color for icons
+    val shuffledColorPairs = remember(finalFilteredServices) {
+        val colorPalette = iconColorPairs.shuffled()
+        (0 until finalFilteredServices.size).map { index ->
+            colorPalette[index % colorPalette.size]
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         if (!NetworkChecker(context).isInternetConnected) {
             NoInternetSection { viewModel.getAllItemsService() }
         }
-
         if (categories.isNotEmpty() && !isLoading) {
 //            Text(
 //                text = "محصولات",
@@ -146,7 +157,9 @@ fun HomeScreen() {
             }
 
             else -> {
-                ServicesList(services = finalFilteredServices)
+                ServicesList(
+                    services = finalFilteredServices, colors = shuffledColorPairs
+                )
             }
         }
     }
@@ -208,7 +221,9 @@ fun CategoryChips(
 }
 
 @Composable
-fun ServicesList(services: List<ServiceItemsResponse>) {
+fun ServicesList(
+    services: List<ServiceItemsResponse>, colors: List<Pair<Color, Color>>
+) {
     if (services.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("سرویسی در این دسته‌بندی یافت نشد.", style = bodyMediumCard)
@@ -219,8 +234,8 @@ fun ServicesList(services: List<ServiceItemsResponse>) {
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(services) { serviceItem ->
-                ItemCard(serviceItem)
+            itemsIndexed(services) { index, serviceItem ->
+                ItemCard(serviceItem, colors[index])
             }
         }
     }
@@ -228,8 +243,12 @@ fun ServicesList(services: List<ServiceItemsResponse>) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemCard(response: ServiceItemsResponse) {
+fun ItemCard(
+    response: ServiceItemsResponse, colors: Pair<Color, Color>
+) {
     val navigation = getNavController()
+    val (backgroundColor, iconColor) = colors
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -251,13 +270,12 @@ fun ItemCard(response: ServiceItemsResponse) {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .size(52.dp)
-                        .background(color = Color(0xFFDBEAFE), shape = RoundedCornerShape(10.dp))
+                        .background(color = backgroundColor, shape = RoundedCornerShape(10.dp))
                 ) {
                     Icon(
-
                         imageVector = ImageVector.vectorResource(R.drawable.ic_add_shopping_cart),
                         contentDescription = null,
-                        tint = Color(0xFF2563EB)
+                        tint = iconColor
                     )
                 }
             }
