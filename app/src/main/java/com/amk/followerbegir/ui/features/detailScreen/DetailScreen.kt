@@ -30,14 +30,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,7 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -74,10 +71,10 @@ import com.amk.followerbegir.ui.features.orderScreen.ErrorSection
 import com.amk.followerbegir.ui.features.orderScreen.NoInternetSection
 import com.amk.followerbegir.ui.features.profileScreen.AccountViewModel
 import com.amk.followerbegir.ui.theme.FollowerBegirTheme
-import com.amk.followerbegir.ui.theme.LightColorScheme
 import com.amk.followerbegir.ui.theme.bodyLargeCard
 import com.amk.followerbegir.ui.theme.bodyMediumCard
 import com.amk.followerbegir.ui.theme.bodySmallCard
+import com.amk.followerbegir.ui.theme.customColors
 import com.amk.followerbegir.ui.theme.textFieldStyle
 import com.amk.followerbegir.util.NetworkChecker
 import com.amk.followerbegir.util.formatBalanceWithCommas
@@ -92,7 +89,7 @@ fun DetailScreenPreview() {
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
-            DetailScreen("")
+            DetailScreen("1")
         }
     }
 }
@@ -160,8 +157,6 @@ fun DetailScreen(serviceId: String?) {
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-
-                // Show Order Status
                 if (orderMessage != null) {
                     OrderMessagePopup(
                         message = orderMessage,
@@ -171,34 +166,33 @@ fun DetailScreen(serviceId: String?) {
                     }
                 }
 
-                // Other element of page
                 Text(
                     text = "ثبت سفارش",
                     style = bodyLargeCard,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .align(Alignment.End)
                         .padding(bottom = 20.dp)
                 )
 
-                Card(
+                Surface(
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = LightColorScheme.background),
-                    elevation = CardDefaults.cardElevation(2.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    shadowElevation = 2.dp,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-
                     Column(
                         modifier = Modifier.padding(horizontal = 22.dp, vertical = 12.dp),
                         horizontalAlignment = Alignment.End,
                         verticalArrangement = Arrangement.Center
                     ) {
-
                         Text(
                             modifier = Modifier.padding(vertical = 14.dp),
                             text = "مشخصات سرویس",
                             style = bodyLargeCard,
-                            fontSize = 18.sp
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
 
                         Row(
@@ -206,21 +200,21 @@ fun DetailScreen(serviceId: String?) {
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(Color(0xFFF1F1F1)),
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
                                 modifier = Modifier.padding(16.dp),
                                 text = detail.name,
-                                style = bodySmallCard.copy(textDirection = TextDirection.Rtl)
+                                style = bodySmallCard.copy(textDirection = TextDirection.Rtl),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-
                             Text(
                                 modifier = Modifier.padding(16.dp),
                                 text = "نام سرویس",
                                 style = bodySmallCard,
-                                color = Color.DarkGray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 
@@ -229,35 +223,33 @@ fun DetailScreen(serviceId: String?) {
                                 .fillMaxWidth()
                                 .padding(vertical = 8.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(Color(0xFFF1F1F1)),
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-
                             Text(
                                 modifier = Modifier.padding(16.dp),
                                 text = detail.rate.formatBalanceWithCommas()
                                     .toPersianDigits() + " تومان",
                                 style = bodySmallCard.copy(textDirection = TextDirection.Rtl),
-                                color = Color(0xFF3D8D41)
+                                color = MaterialTheme.customColors.success
                             )
-
                             Text(
                                 modifier = Modifier.padding(16.dp),
                                 text = "قیمت (هر هزار تا)",
                                 style = bodySmallCard,
-                                color = Color.DarkGray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                    }
 
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Column(
-                        modifier = Modifier.padding(horizontal = 22.dp, vertical = 12.dp),
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text("توضیحات", style = bodyMediumCard, fontSize = 18.sp)
+                        Text(
+                            "توضیحات",
+                            style = bodyMediumCard,
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                         Spacer(modifier = Modifier.height(12.dp))
                         HtmlDescriptionView(detail.desc)
                     }
@@ -265,14 +257,12 @@ fun DetailScreen(serviceId: String?) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-
-                Card(
+                Surface(
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = LightColorScheme.background),
-                    elevation = CardDefaults.cardElevation(2.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    shadowElevation = 2.dp,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-
                     Column(
                         Modifier
                             .fillMaxSize()
@@ -280,13 +270,12 @@ fun DetailScreen(serviceId: String?) {
                         horizontalAlignment = Alignment.End,
                         verticalArrangement = Arrangement.Center
                     ) {
-
                         Text(
                             modifier = Modifier.padding(vertical = 14.dp),
                             text = "آیدی پیج یا لینک",
-                            style = bodyMediumCard
+                            style = bodyMediumCard,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-
                         OutlinedTextField(
                             value = pageId.value,
                             onValueChange = {
@@ -301,7 +290,8 @@ fun DetailScreen(serviceId: String?) {
                                     text = "آیدی پیج یا لینک را وارد کنید",
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.Right,
-                                    style = textFieldStyle
+                                    style = textFieldStyle,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
                             supportingText = {
@@ -326,16 +316,11 @@ fun DetailScreen(serviceId: String?) {
                             leadingIcon = {
                                 Icon(
                                     imageVector = ImageVector.vectorResource((R.drawable.ic_insert_link)),
-                                    null
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
                             shape = RoundedCornerShape(10.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedBorderColor = Color.Gray,
-                                focusedBorderColor = Color.Gray,
-                                unfocusedContainerColor = Color.LightGray.copy(alpha = 0.1f),
-                                focusedContainerColor = Color.LightGray.copy(alpha = 0.1f)
-                            )
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -343,9 +328,9 @@ fun DetailScreen(serviceId: String?) {
                         Text(
                             modifier = Modifier.padding(bottom = 14.dp),
                             text = "تعداد سفارش" + " (${detail.min} تا ${detail.max})",
-                            style = bodyMediumCard
+                            style = bodyMediumCard,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-
                         OutlinedTextField(
                             value = quantity.value,
                             onValueChange = {
@@ -363,7 +348,8 @@ fun DetailScreen(serviceId: String?) {
                                     text = "تعداد مورد نظر را وارد کنید",
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.Right,
-                                    style = textFieldStyle
+                                    style = textFieldStyle,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
                             supportingText = {
@@ -386,16 +372,11 @@ fun DetailScreen(serviceId: String?) {
                             leadingIcon = {
                                 Icon(
                                     imageVector = ImageVector.vectorResource((R.drawable.ic_numbers)),
-                                    null
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
                             shape = RoundedCornerShape(10.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedBorderColor = Color.Gray,
-                                focusedBorderColor = Color.Gray,
-                                unfocusedContainerColor = Color.LightGray.copy(alpha = 0.1f),
-                                focusedContainerColor = Color.LightGray.copy(alpha = 0.1f)
-                            )
                         )
 
                         Spacer(modifier = Modifier.height(14.dp))
@@ -404,9 +385,8 @@ fun DetailScreen(serviceId: String?) {
                             onClick = {
                                 val isPageIdValid =
                                     pageId.value.isNotBlank() && pageIdError.value.isEmpty()
-                                val isQuantityValid = quantity.value.toIntOrNull()?.let {
-                                    it in detail.min..detail.max
-                                } == true
+                                val isQuantityValid = quantity.value.toIntOrNull()
+                                    ?.let { it in detail.min..detail.max } == true
 
                                 if (!isPageIdValid || !isQuantityValid) {
                                     if (pageId.value.isBlank()) pageIdError.value =
@@ -421,30 +401,32 @@ fun DetailScreen(serviceId: String?) {
                                 } else {
                                     showConfirmDialog.value = true
                                 }
-                            }, modifier = Modifier
+                            },
+                            modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
                             shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(Color(0xFF2563EA))
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
                         ) {
                             Icon(
                                 painterResource(R.drawable.ic_shopping_cart_checkout),
-                                null,
-                                modifier = Modifier.size(24.dp)
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
-
                             Spacer(modifier = Modifier.padding(end = 8.dp))
-
                             Text(
                                 text = "ثبت سفارش",
                                 style = bodyMediumCard,
-                                color = Color.White,
-                                fontSize = 18.sp
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         }
 
                         Spacer(modifier = Modifier.height(14.dp))
-
                     }
                 }
 
@@ -474,13 +456,19 @@ fun DetailScreen(serviceId: String?) {
                                     val currentWallet = accountViewModel.wallet.value
                                     if (currentWallet >= totalPrice) {
                                         accountViewModel.decreaseWallet(
-                                            context, lifecycleOwner, totalPrice, onError = {
+                                            context,
+                                            lifecycleOwner,
+                                            totalPrice,
+                                            onError = {
                                                 Toast.makeText(context, it, Toast.LENGTH_SHORT)
                                                     .show()
                                             })
                                         viewModel.addOrderService(
-                                            serviceId?.toInt() ?: 0, pageId.value, quantityValue
+                                            serviceId?.toInt() ?: 0,
+                                            pageId.value,
+                                            quantityValue
                                         )
+
                                         showConfirmDialog.value = false
                                         hasReadDescription.value = false
                                     } else {
@@ -491,7 +479,8 @@ fun DetailScreen(serviceId: String?) {
                                         ).show()
                                         showConfirmDialog.value = false
                                     }
-                                }, enabled = hasReadDescription.value
+                                },
+                                enabled = hasReadDescription.value
                             ) {
                                 Text(
                                     "آره، ثبت کن",
@@ -504,36 +493,30 @@ fun DetailScreen(serviceId: String?) {
                                 showConfirmDialog.value = false
                                 hasReadDescription.value = false
                             }) {
-                                Text(
-                                    text = "خیر",
-                                    fontFamily = FontFamily(Font(R.font.dana_medium))
-                                )
+                                Text("خیر", fontFamily = FontFamily(Font(R.font.dana_medium)))
                             }
                         },
                         title = {
                             Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .align(Alignment.End),
+                                modifier = Modifier.fillMaxWidth(),
                                 text = "ثبت سفارش",
-                                style = bodyLargeCard
+                                style = bodyLargeCard,
+                                textAlign = TextAlign.Right,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         text = {
                             Column {
                                 Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .align(Alignment.End),
+                                    modifier = Modifier.fillMaxWidth(),
                                     text = "آیا از ثبت این سفارش مطمئنی؟",
                                     style = bodyMediumCard,
-                                    textAlign = TextAlign.Right
+                                    textAlign = TextAlign.Right,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .align(Alignment.End),
+                                    modifier = Modifier.fillMaxWidth(),
                                     text = "قیمت نهایی سفارش: ${
                                         String.format(
                                             "%,d",
@@ -546,24 +529,39 @@ fun DetailScreen(serviceId: String?) {
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            hasReadDescription.value = !hasReadDescription.value
+                                        },
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.End
                                 ) {
+                                    Text(
+                                        text = "توضیحات را خواندم",
+                                        style = bodySmallCard,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
                                     Checkbox(
                                         checked = hasReadDescription.value,
-                                        onCheckedChange = { hasReadDescription.value = it })
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        modifier = Modifier.clickable {
-                                            hasReadDescription.value = true
-                                        },
-                                        text = "توضیحات را خواندم",
-                                        style = bodySmallCard
+                                        onCheckedChange = { hasReadDescription.value = it }
                                     )
                                 }
                             }
-                        })
+                        }
+                    )
+                }
+
+                LaunchedEffect(orderMessage) {
+                    if (orderMessage == "✅ سفارش با موفقیت ثبت شد" && !viewModel.isOrderSaved.value) {
+                        viewModel.isOrderSaved.value = true
+                        accountViewModel.addOrderNumber(
+                            context,
+                            lifecycleOwner,
+                            viewModel.orderId.value ?: return@LaunchedEffect
+                        )
+                    }
                 }
             }
         }
@@ -579,6 +577,7 @@ fun DetailScreen(serviceId: String?) {
 @Composable
 fun HtmlDescriptionView(htmlText: String) {
     val context = LocalContext.current
+    val textColor = MaterialTheme.colorScheme.onSurface
 
     val spannedText = remember(htmlText) {
         HtmlCompat.fromHtml(htmlText, HtmlCompat.FROM_HTML_MODE_LEGACY)
@@ -593,11 +592,15 @@ fun HtmlDescriptionView(htmlText: String) {
             TextView(it).apply {
                 text = spannedText
                 textSize = 14f
-                setTextColor(android.graphics.Color.BLACK)
+                setTextColor(textColor.toArgb())
                 typeface = customFont
                 movementMethod = LinkMovementMethod.getInstance()
             }
-        }, modifier = Modifier.fillMaxWidth()
+        },
+        update = {
+            it.setTextColor(textColor.toArgb())
+        },
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
@@ -609,6 +612,13 @@ fun OrderMessagePopup(
 ) {
     var visible by remember { mutableStateOf(true) }
 
+    val backgroundColor =
+        if (isError) MaterialTheme.colorScheme.errorContainer else MaterialTheme.customColors.successContainer
+    val contentColor =
+        if (isError) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.customColors.onSuccessContainer
+    val iconColor =
+        if (isError) MaterialTheme.colorScheme.error else MaterialTheme.customColors.success
+
     LaunchedEffect(Unit) {
         delay(3000)
         visible = false
@@ -618,25 +628,19 @@ fun OrderMessagePopup(
 
     AnimatedVisibility(
         visible = visible,
-        enter = fadeIn(animationSpec = tween(500)) + slideInVertically(
-            initialOffsetY = { -it }
-        ),
-        exit = fadeOut(animationSpec = tween(500)) + slideOutVertically(
-            targetOffsetY = { -it }
-        )
+        enter = fadeIn(animationSpec = tween(500)) + slideInVertically(initialOffsetY = { -it }),
+        exit = fadeOut(animationSpec = tween(500)) + slideOutVertically(targetOffsetY = { -it })
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Transparent),
+                .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.0f)),
             contentAlignment = Alignment.TopCenter
         ) {
-            Card(
+            Surface(
                 shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(6.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (isError) Color(0xFFFFE5E5) else Color(0xFFE8F9F1)
-                ),
+                shadowElevation = 6.dp,
+                color = backgroundColor,
                 modifier = Modifier
                     .padding(top = 32.dp, start = 16.dp, end = 16.dp)
                     .fillMaxWidth()
@@ -649,23 +653,19 @@ fun OrderMessagePopup(
                     horizontalArrangement = Arrangement.Start
                 ) {
                     Icon(
-                        painter = painterResource(
-                            if (isError) R.drawable.ic_error else R.drawable.ic_success
-                        ),
+                        painter = painterResource(if (isError) R.drawable.ic_error else R.drawable.ic_success),
                         contentDescription = null,
-                        tint = if (isError) Color.Red else Color(0xFF2E7D32),
+                        tint = iconColor,
                         modifier = Modifier.size(28.dp)
                     )
-
                     Spacer(modifier = Modifier.width(12.dp))
-
                     Text(
                         text = message,
                         style = bodyMediumCard.copy(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         ),
-                        color = if (isError) Color.Red else Color(0xFF2E7D32),
+                        color = contentColor,
                         modifier = Modifier.weight(1f)
                     )
                 }

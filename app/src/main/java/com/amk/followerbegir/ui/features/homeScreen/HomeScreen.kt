@@ -19,8 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -39,8 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -60,7 +56,6 @@ import com.amk.followerbegir.model.data.ServiceItemsResponse
 import com.amk.followerbegir.ui.features.orderScreen.ErrorSection
 import com.amk.followerbegir.ui.features.orderScreen.NoInternetSection
 import com.amk.followerbegir.ui.theme.FollowerBegirTheme
-import com.amk.followerbegir.ui.theme.LightColorScheme
 import com.amk.followerbegir.ui.theme.bodyMediumCard
 import com.amk.followerbegir.ui.theme.bodySmallCard
 import com.amk.followerbegir.util.MyScreens
@@ -107,7 +102,6 @@ fun HomeScreen() {
         baseFilteredServices.filter { it.category == selectedCategory }
     }
 
-    // Get random color for icons
     val shuffledColorPairs = remember(finalFilteredServices) {
         val colorPalette = iconColorPairs.shuffled()
         (0 until finalFilteredServices.size).map { index ->
@@ -125,13 +119,6 @@ fun HomeScreen() {
             NoInternetSection { viewModel.getAllItemsService() }
         }
         if (categories.isNotEmpty() && !isLoading) {
-//            Text(
-//                text = "محصولات",
-//                style = bodyLargeCard,
-//                modifier = Modifier
-//                    .align(Alignment.End)
-//                    .padding(end = 16.dp)
-//            )
             CategoryChips(
                 categories = categories,
                 selectedCategory = selectedCategory,
@@ -179,40 +166,54 @@ fun CategoryChips(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
+                val isSelected = selectedCategory == "همه"
                 FilterChip(
                     modifier = Modifier.height(34.dp),
-                    selected = selectedCategory == "همه",
+                    selected = isSelected,
                     onClick = { onCategorySelected("همه") },
                     shape = CircleShape,
                     label = {
                         Text(
                             text = "همه",
                             style = bodySmallCard,
-                            color = if (selectedCategory == "همه") White else Color.Black
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                         )
                     },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primary,
                         containerColor = Color.Transparent
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = isSelected,
+                        borderColor = MaterialTheme.colorScheme.outline,
+                        selectedBorderColor = Color.Transparent
                     )
                 )
             }
             items(categories) { category ->
+                val isSelected = selectedCategory == category
                 FilterChip(
                     modifier = Modifier.height(34.dp),
-                    selected = selectedCategory == category,
+                    selected = isSelected,
                     onClick = { onCategorySelected(category) },
                     shape = CircleShape,
                     label = {
                         Text(
                             text = category,
                             style = bodySmallCard,
-                            color = if (selectedCategory == category) White else Color.Black
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                         )
                     },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primary,
                         containerColor = Color.Transparent
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = isSelected,
+                        borderColor = MaterialTheme.colorScheme.outline,
+                        selectedBorderColor = Color.Transparent
                     )
                 )
             }
@@ -226,12 +227,15 @@ fun ServicesList(
 ) {
     if (services.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("سرویسی در این دسته‌بندی یافت نشد.", style = bodyMediumCard)
+            Text(
+                "سرویسی در این دسته‌بندی یافت نشد.",
+                style = bodyMediumCard,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     } else {
         LazyColumn(
-            modifier = Modifier.padding(top = 10.dp),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             itemsIndexed(services) { index, serviceItem ->
@@ -249,13 +253,14 @@ fun ItemCard(
     val navigation = getNavController()
     val (backgroundColor, iconColor) = colors
 
-    Card(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(130.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = LightColorScheme.background),
-        elevation = CardDefaults.cardElevation(2.dp),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 0.dp,
+        shadowElevation = 2.dp,
         onClick = { navigation.navigate(MyScreens.DetailScreen.createRoute(response.service)) }) {
         Row(
             modifier = Modifier
@@ -285,8 +290,17 @@ fun ItemCard(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.End
             ) {
-                Text(text = response.name, style = bodyMediumCard, fontWeight = FontWeight.Bold)
-                Text(text = "شروع قیمت از", style = bodySmallCard, color = DarkGray)
+                Text(
+                    text = response.name,
+                    style = bodyMediumCard,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "شروع قیمت از",
+                    style = bodySmallCard,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Text(
                     text = buildAnnotatedString {
                         withStyle(
@@ -301,7 +315,7 @@ fun ItemCard(
                         }
                     },
                     style = bodySmallCard.copy(textDirection = TextDirection.Rtl),
-                    color = Color(0xFF3D5AFE)
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -320,7 +334,7 @@ fun EmptyServiceSection() {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_error),
             null,
-            tint = DarkGray,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(76.dp)
         )
 
@@ -330,6 +344,7 @@ fun EmptyServiceSection() {
             text = "سرویسی یافت نشد",
             style = bodyMediumCard,
             fontSize = 18.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
 
@@ -338,7 +353,7 @@ fun EmptyServiceSection() {
         Text(
             text = "ممکنه اختلال لحظه‌ای باشه، یکم دیگه دوباره تلاش کن",
             style = bodyMediumCard,
-            color = DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
     }

@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -76,7 +78,11 @@ fun MainScreen() {
                             }
                         },
                         label = {
-                            Text(text = item.title, style = navigationBarTextStyle)
+                            Text(
+                                text = item.title,
+                                style = navigationBarTextStyle,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         },
                         icon = {
                             BadgedBox(
@@ -95,7 +101,14 @@ fun MainScreen() {
                                     contentDescription = item.title
                                 )
                             }
-                        }
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     )
                 }
             }

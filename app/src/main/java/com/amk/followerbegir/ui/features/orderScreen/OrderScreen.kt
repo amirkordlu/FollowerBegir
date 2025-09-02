@@ -16,10 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,7 +47,6 @@ import com.amk.followerbegir.R
 import com.amk.followerbegir.model.data.OrderStatusResponse
 import com.amk.followerbegir.ui.features.profileScreen.AccountViewModel
 import com.amk.followerbegir.ui.theme.FollowerBegirTheme
-import com.amk.followerbegir.ui.theme.LightColorScheme
 import com.amk.followerbegir.ui.theme.bodyLargeCard
 import com.amk.followerbegir.ui.theme.bodyMediumCard
 import com.amk.followerbegir.ui.theme.bodySmallCard
@@ -63,7 +62,8 @@ import dev.burnoo.cokoin.navigation.getNavViewModel
 fun OrderScreenPreview() {
     FollowerBegirTheme {
         Surface(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
         ) {
             OrderScreen()
         }
@@ -101,8 +101,10 @@ fun OrderScreen() {
         retryLoad()
     }
 
+    // if (isLoggedIn && orderNumbers.isNotEmpty() && orderStatuses.isEmpty()) {
+
     LaunchedEffect(orderNumbers) {
-        if (isLoggedIn && orderNumbers.isNotEmpty() && orderStatuses.isEmpty()) {
+        if (isLoggedIn && orderNumbers.isNotEmpty()) {
             val joinedOrders = orderNumbers.joinToString(",")
             orderViewModel.getOrdersStatus(joinedOrders)
         }
@@ -150,6 +152,7 @@ fun OrderScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderStatusCard(orderStatus: OrderStatusResponse) {
     val clipboardManager = LocalClipboardManager.current
@@ -166,13 +169,14 @@ fun OrderStatusCard(orderStatus: OrderStatusResponse) {
         شروع از: $startCount
     """.trimIndent()
 
-    Card(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = LightColorScheme.background),
-        elevation = CardDefaults.cardElevation(2.dp),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 0.dp,
+        shadowElevation = 2.dp,
         onClick = { clipboardManager.setText(AnnotatedString(copyText)) }
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -195,15 +199,15 @@ fun OrderStatusCard(orderStatus: OrderStatusResponse) {
                     "سفارش $orderNumber",
                     style = bodyLargeCard,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 17.sp
                 )
             }
 
-
             Surface(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
                 shape = RoundedCornerShape(size = 12.dp),
-                color = Color(0xFFF8F8F8)
+                color = MaterialTheme.colorScheme.surfaceVariant
             ) {
 
                 Row(
@@ -219,6 +223,7 @@ fun OrderStatusCard(orderStatus: OrderStatusResponse) {
                             modifier = Modifier.padding(vertical = 8.dp),
                             text = remains,
                             style = bodySmallCard,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Bold
                         )
 
@@ -226,6 +231,7 @@ fun OrderStatusCard(orderStatus: OrderStatusResponse) {
                             modifier = Modifier.padding(vertical = 8.dp),
                             text = startCount,
                             style = bodySmallCard,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -243,14 +249,14 @@ fun OrderStatusCard(orderStatus: OrderStatusResponse) {
                         ) {
                             Text(
                                 text = ":تعداد باقی‌مانده",
-                                color = Color.DarkGray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = bodySmallCard,
                                 modifier = Modifier.padding(end = 4.dp)
                             )
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_inventory),
                                 contentDescription = null,
-                                tint = Color.Gray,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -264,14 +270,14 @@ fun OrderStatusCard(orderStatus: OrderStatusResponse) {
                         ) {
                             Text(
                                 text = ":شروع از",
-                                color = Color.DarkGray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = bodySmallCard,
                                 modifier = Modifier.padding(end = 4.dp)
                             )
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_start),
                                 contentDescription = null,
-                                tint = Color.Gray,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -328,8 +334,8 @@ fun EmptyOrderSection() {
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_shopping_off),
-            null,
-            tint = Color.DarkGray,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(76.dp)
         )
 
@@ -339,7 +345,8 @@ fun EmptyOrderSection() {
             text = "هنوز چیزی سفارش ندادی",
             style = bodyMediumCard,
             fontSize = 18.sp,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(modifier = Modifier.padding(4.dp))
@@ -347,7 +354,7 @@ fun EmptyOrderSection() {
         Text(
             text = "سفارش‌های فعلی و گذشته‌ات اینجا نمایش داده میشن",
             style = bodyMediumCard,
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
     }
@@ -365,8 +372,8 @@ fun NoInternetSection(onClick: () -> Unit) {
 
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_internet_off),
-            null,
-            tint = Color.Red,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(76.dp)
         )
 
@@ -376,7 +383,8 @@ fun NoInternetSection(onClick: () -> Unit) {
             text = "اینترنت نداری",
             style = bodyMediumCard,
             fontSize = 18.sp,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(modifier = Modifier.padding(4.dp))
@@ -384,14 +392,14 @@ fun NoInternetSection(onClick: () -> Unit) {
         Text(
             text = "اتصال اینترنت رو بررسی کن و دوباره تلاش کن",
             style = bodyMediumCard,
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.padding(12.dp))
 
         Button(onClick = { onClick.invoke() }) {
-            Text("تلاش مجدد", style = bodyMediumCard, color = Color.White)
+            Text("تلاش مجدد", style = bodyMediumCard, color = MaterialTheme.colorScheme.onPrimary)
         }
     }
 }
@@ -407,8 +415,8 @@ fun NoLoginSection() {
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_login),
-            null,
-            tint = Color.DarkGray,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(76.dp)
         )
 
@@ -418,7 +426,8 @@ fun NoLoginSection() {
             text = "وارد حسابت نشدی",
             style = bodyMediumCard,
             fontSize = 18.sp,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(modifier = Modifier.padding(4.dp))
@@ -426,7 +435,7 @@ fun NoLoginSection() {
         Text(
             text = "از بخش پروفایل وارد حساب بازارت شو تا سفارشاتت رو ببینی",
             style = bodyMediumCard,
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
     }
@@ -443,8 +452,8 @@ fun ErrorSection(onClick: () -> Unit) {
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_error),
-            null,
-            tint = Color.Red,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(76.dp)
         )
 
@@ -454,7 +463,8 @@ fun ErrorSection(onClick: () -> Unit) {
             text = "خطا در دریافت اطلاعات",
             style = bodyMediumCard,
             fontSize = 18.sp,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(modifier = Modifier.padding(4.dp))
@@ -462,14 +472,14 @@ fun ErrorSection(onClick: () -> Unit) {
         Text(
             text = "یکم دیگه دوباره تلاش کن و اگر درست نشد با پشتیبانی تماس بگیر",
             style = bodyMediumCard,
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(onClick = { onClick.invoke() }) {
-            Text("تلاش مجدد", style = bodyMediumCard, color = Color.White)
+            Text("تلاش مجدد", style = bodyMediumCard, color = MaterialTheme.colorScheme.onPrimary)
         }
     }
 }

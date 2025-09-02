@@ -22,10 +22,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -117,7 +116,6 @@ fun ShopScreen() {
                 Log.v("LoginScreen", "Disconnected from Bazaar")
             }
         )
-        // Get login and points
         viewModel.getBazaarLogin(context, lifecycleOwner)
         viewModel.loadUserData(context, lifecycleOwner)
     }
@@ -137,15 +135,15 @@ fun ShopScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        ElevatedCard(
+        Surface(
             modifier = Modifier
                 .align(Alignment.End)
                 .height(76.dp)
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             onClick = { },
-            colors = CardDefaults.cardColors(Color(0xFFFFFFFF)),
+            color = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(30.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            shadowElevation = 4.dp
         ) {
             Row(
                 modifier = Modifier
@@ -168,10 +166,15 @@ fun ShopScreen() {
                             .formatBalanceWithCommas()
                             .toPersianDigits()
                         buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = Color(0xFF383838))) {
+                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
                                 append("موجودی کیف پول: ")
                             }
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            ) {
                                 append("$currentPoints تومان")
                             }
                         }
@@ -606,7 +609,8 @@ fun ShopScreen() {
 //                   sendEmail(context,"amir.kordlu@gmail.com")
                 },
             text = "نیاز به پشتیبانی داری؟ کلیک کن",
-            style = bodySmallCard
+            style = bodySmallCard,
+            color = MaterialTheme.colorScheme.primary
         )
 
     }
@@ -623,16 +627,14 @@ fun BuyCoinCard(
     hasOff: Boolean,
     offValue: String
 ) {
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        ),
+    Surface(
+        shadowElevation = 2.dp,
         modifier = modifier
             .fillMaxWidth(0.4f)
             .height(230.dp)
             .padding(vertical = 8.dp),
         onClick = { onCardClicked.invoke() },
-        colors = CardDefaults.cardColors(Color(0xFFFFFFFF)),
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp)
     ) {
 
@@ -654,7 +656,7 @@ fun BuyCoinCard(
                     modifier = Modifier.padding(top = 18.dp, bottom = 4.dp),
                     text = mainTextCard,
                     style = bodyMediumCard,
-                    color = Color(0xFF000000),
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -663,7 +665,7 @@ fun BuyCoinCard(
                     text = "شارژ کیف پول",
                     style = bodySmallCard,
                     fontSize = 12.sp,
-                    color = Color(0xFF595959)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 if (hasOff) {
@@ -671,14 +673,15 @@ fun BuyCoinCard(
                         modifier =
                             Modifier
                                 .background(
-                                    color = Color(0xFFEF5350),
+                                    color = MaterialTheme.colorScheme.error,
                                     shape = RoundedCornerShape(size = 6.dp)
                                 )
                                 .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 4.dp)
                     ) {
                         Text(
                             text = offValue,
-                            style = bodySmallCard
+                            style = bodySmallCard,
+                            color = MaterialTheme.colorScheme.onError
                         )
 
                     }
@@ -736,6 +739,3 @@ fun PurchaseDialog(infoDialogState: UseCaseState, bodyText: String) {
         }
     )
 }
-
-
-
