@@ -77,6 +77,7 @@ import com.amk.followerbegir.ui.theme.bodySmallCard
 import com.amk.followerbegir.ui.theme.customColors
 import com.amk.followerbegir.ui.theme.textFieldStyle
 import com.amk.followerbegir.util.NetworkChecker
+import com.amk.followerbegir.util.PROFIT_PERCENT
 import com.amk.followerbegir.util.formatBalanceWithCommas
 import com.amk.followerbegir.util.toPersianDigits
 import dev.burnoo.cokoin.navigation.getNavViewModel
@@ -218,6 +219,8 @@ fun DetailScreen(serviceId: String?) {
                             )
                         }
 
+
+                        val serviceRateWithProfit = (detail.rate * PROFIT_PERCENT).toInt()
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -229,7 +232,7 @@ fun DetailScreen(serviceId: String?) {
                         ) {
                             Text(
                                 modifier = Modifier.padding(16.dp),
-                                text = detail.rate.formatBalanceWithCommas()
+                                text = serviceRateWithProfit.formatBalanceWithCommas()
                                     .toPersianDigits() + " تومان",
                                 style = bodySmallCard.copy(textDirection = TextDirection.Rtl),
                                 color = MaterialTheme.customColors.success
@@ -432,7 +435,8 @@ fun DetailScreen(serviceId: String?) {
 
                 if (showConfirmDialog.value) {
                     val quantityValue = quantity.value.toIntOrNull() ?: 0
-                    val totalPrice = ((quantityValue / 1000f) * detail.rate).toInt()
+                    val totalPriceWithProfit = (quantityValue.toFloat() / 1000f) * (detail.rate * PROFIT_PERCENT)
+                    val finalPrice = totalPriceWithProfit.toInt()
 
                     AlertDialog(
                         onDismissRequest = {
@@ -454,11 +458,11 @@ fun DetailScreen(serviceId: String?) {
                                     }
 
                                     val currentWallet = accountViewModel.wallet.value
-                                    if (currentWallet >= totalPrice) {
+                                    if (currentWallet >= finalPrice) {
                                         accountViewModel.decreaseWallet(
                                             context,
                                             lifecycleOwner,
-                                            totalPrice,
+                                            finalPrice,
                                             onError = {
                                                 Toast.makeText(context, it, Toast.LENGTH_SHORT)
                                                     .show()
@@ -518,10 +522,7 @@ fun DetailScreen(serviceId: String?) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = "قیمت نهایی سفارش: ${
-                                        String.format(
-                                            "%,d",
-                                            totalPrice
-                                        )
+                                        finalPrice.formatBalanceWithCommas().toPersianDigits()
                                     } تومان",
                                     style = bodyMediumCard,
                                     color = MaterialTheme.colorScheme.primary,

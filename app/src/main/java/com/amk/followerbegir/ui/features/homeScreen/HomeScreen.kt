@@ -60,6 +60,7 @@ import com.amk.followerbegir.ui.theme.bodyMediumCard
 import com.amk.followerbegir.ui.theme.bodySmallCard
 import com.amk.followerbegir.util.MyScreens
 import com.amk.followerbegir.util.NetworkChecker
+import com.amk.followerbegir.util.PROFIT_PERCENT
 import com.amk.followerbegir.util.allowedServices
 import com.amk.followerbegir.util.formatBalanceWithCommas
 import com.amk.followerbegir.util.iconColorPairs
@@ -253,6 +254,8 @@ fun ItemCard(
     val navigation = getNavController()
     val (backgroundColor, iconColor) = colors
 
+    val serviceRateWithProfit = (response.rate * PROFIT_PERCENT).toInt()
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -261,7 +264,8 @@ fun ItemCard(
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 0.dp,
         shadowElevation = 2.dp,
-        onClick = { navigation.navigate(MyScreens.DetailScreen.createRoute(response.service)) }) {
+        onClick = { navigation.navigate(MyScreens.DetailScreen.createRoute(response.service)) }
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -308,7 +312,9 @@ fun ItemCard(
                                 fontWeight = FontWeight.Bold, fontSize = 18.sp
                             )
                         ) {
-                            append(response.rate.formatBalanceWithCommas().toPersianDigits())
+                            append(
+                                serviceRateWithProfit.formatBalanceWithCommas().toPersianDigits()
+                            )
                         }
                         withStyle(style = SpanStyle()) {
                             append(" تومان")
