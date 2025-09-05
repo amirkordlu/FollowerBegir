@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.amk.followerbegir"
+    namespace = "com.amk.rubikafollower"
     compileSdk = 36
 
     defaultConfig {
