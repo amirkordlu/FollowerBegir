@@ -53,7 +53,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.amk.rubikafollower.R
 import com.amk.rubikafollower.ui.theme.FollowerBegirTheme
-import com.amk.rubikafollower.ui.theme.Typography
+import com.amk.rubikafollower.ui.theme.bodyLargeCard
 import com.amk.rubikafollower.ui.theme.bodyMediumCard
 import com.amk.rubikafollower.ui.theme.bodySmallCard
 import com.amk.rubikafollower.util.MyScreens
@@ -212,17 +212,17 @@ fun ShopScreen() {
                 {
                     if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
-                            "25coin",
+                            "charge_10k",
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.increaseWallet(context, lifecycleOwner, 25)
+                                viewModel.increaseWallet(context, lifecycleOwner, 10000)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
-                                        "token: ${purchaseEntity.purchaseToken}"
+                                        purchaseEntity.purchaseToken
                                     purchaseDialogState.show()
                                 }, {})
                             })
@@ -248,17 +248,17 @@ fun ShopScreen() {
                 {
                     if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
-                            "10coin",
+                            "charge_5k",
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.increaseWallet(context, lifecycleOwner, 10)
+                                viewModel.increaseWallet(context, lifecycleOwner, 5000)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
-                                        "token: ${purchaseEntity.purchaseToken}"
+                                        purchaseEntity.purchaseToken
                                     purchaseDialogState.show()
                                 }, {})
                             })
@@ -294,17 +294,17 @@ fun ShopScreen() {
                 {
                     if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
-                            "100coin",
+                            "charge_50k",
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.increaseWallet(context, lifecycleOwner, 100)
+                                viewModel.increaseWallet(context, lifecycleOwner, 50000)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
-                                        "token: ${purchaseEntity.purchaseToken}"
+                                        purchaseEntity.purchaseToken
                                     purchaseDialogState.show()
                                 }, {})
                             })
@@ -329,17 +329,17 @@ fun ShopScreen() {
                 {
                     if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
-                            "50coin",
+                            "charge_20k",
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.increaseWallet(context, lifecycleOwner, 50)
+                                viewModel.increaseWallet(context, lifecycleOwner, 20000)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
-                                        "token: ${purchaseEntity.purchaseToken}"
+                                        purchaseEntity.purchaseToken
                                     purchaseDialogState.show()
                                 }, {})
                             })
@@ -374,17 +374,17 @@ fun ShopScreen() {
                 {
                     if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
-                            "500coin",
+                            "charge_200k",
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.increaseWallet(context, lifecycleOwner, 500)
+                                viewModel.increaseWallet(context, lifecycleOwner, 200000)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
-                                        "token: ${purchaseEntity.purchaseToken}"
+                                        purchaseEntity.purchaseToken
                                     purchaseDialogState.show()
                                 }, {})
                             })
@@ -410,17 +410,17 @@ fun ShopScreen() {
                 {
                     if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
-                            "200coin",
+                            "charge_100k",
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.increaseWallet(context, lifecycleOwner, 200)
+                                viewModel.increaseWallet(context, lifecycleOwner, 100000)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
-                                        "token: ${purchaseEntity.purchaseToken}"
+                                        purchaseEntity.purchaseToken
                                     purchaseDialogState.show()
                                 }, {})
                             })
@@ -455,17 +455,17 @@ fun ShopScreen() {
                 {
                     if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
-                            "500coin",
+                            "charge_500k",
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.increaseWallet(context, lifecycleOwner, 500)
+                                viewModel.increaseWallet(context, lifecycleOwner, 500000)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
-                                        "token: ${purchaseEntity.purchaseToken}"
+                                        purchaseEntity.purchaseToken
                                     purchaseDialogState.show()
                                 }, {})
                             })
@@ -491,17 +491,17 @@ fun ShopScreen() {
                 {
                     if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
-                            "200coin",
+                            "charge_300k",
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.increaseWallet(context, lifecycleOwner, 200)
+                                viewModel.increaseWallet(context, lifecycleOwner, 300000)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
-                                        "token: ${purchaseEntity.purchaseToken}"
+                                        purchaseEntity.purchaseToken
                                     purchaseDialogState.show()
                                 }, {})
                             })
@@ -536,17 +536,17 @@ fun ShopScreen() {
                 {
                     if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
-                            "500coin",
+                            "charge_2m",
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.increaseWallet(context, lifecycleOwner, 500)
+                                viewModel.increaseWallet(context, lifecycleOwner, 2000000)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
-                                        "token: ${purchaseEntity.purchaseToken}"
+                                        purchaseEntity.purchaseToken
                                     purchaseDialogState.show()
                                 }, {})
                             })
@@ -572,17 +572,17 @@ fun ShopScreen() {
                 {
                     if (viewModel.wallet.value != null && viewModel.hasLogin.value) {
                         paymentViewModel.startPurchase(
-                            "200coin",
+                            "charge_1m",
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
                                 Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show()
                             },
                             onSuccess = { purchaseEntity ->
-                                viewModel.increaseWallet(context, lifecycleOwner, 200)
+                                viewModel.increaseWallet(context, lifecycleOwner, 1000000)
                                 paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
                                     purchaseInfo.value =
-                                        "token: ${purchaseEntity.purchaseToken}"
+                                        purchaseEntity.purchaseToken
                                     purchaseDialogState.show()
                                 }, {})
                             })
@@ -726,15 +726,19 @@ fun PurchaseDialog(infoDialogState: UseCaseState, bodyText: String) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(20.dp),
-                style = Typography.bodyLarge
+                style = bodyLargeCard,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.End
             )
         },
         onPositiveValid = true,
         body = {
             Text(
-                text = bodyText,
+                modifier = Modifier.fillMaxWidth(),
+                text = "توکن: $bodyText",
                 textAlign = TextAlign.Right,
-                style = Typography.bodyMedium
+                style = bodyMediumCard,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     )
