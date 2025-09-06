@@ -1,7 +1,7 @@
 package com.amk.rubikafollower.util
 
 const val RSA_KEY =
-    "MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwDnYlfZOT5PKM+6mGOJJuare4YP7t1RTyhY2BYsZN7wIVCuvBs807mpdB6zSmo+OJJNXaTH1mUxAxQK4RzQELZC6AXEilZ0knq5RPycbHDwB9wFvMRhk4vwpi/PMdAZbU6fn14WVqp6+lL7TMMU9hhW5vqeGOoP/w//6Ul/bkTG4WR+b/Mk3dGIuLf+DGecrnEmg5eNKI0Ji4fHfVfxuVPdpbWZWVPLqemsjADystsCAwEAAQ=="
+    "MIHNMA0GCSqGSIb3DQEBAQUAA4G7ADCBtwKBrwC2MIPILRhtbxw7EVmtxX9aScdx2+zpG0Or6rhDVdBYb5Ny0uIF8P4nmP5D//eLCVlIBpNh5As/2kOJ3/jHL23ncW2OuCBQscPj/uzRpxxjqGRBI/6OSIcHsFxMK7bU1dVegLwZmf1VrZad/45E9AgWEIZfN9mnk8Xnc9k62q5kam0CXvA/mBricxtFzHGPlLsxZ47ZXZWcjrGfwQ+PmzyWpJEmaBxyqQwj0bPuFc8CAwEAAQ=="
 
 const val BASE_URL = "https://panel.followeran.com/"
 
