@@ -60,6 +60,7 @@ import com.amk.rubikafollower.util.MyScreens
 import com.amk.rubikafollower.util.NetworkChecker
 import com.amk.rubikafollower.util.formatBalanceWithCommas
 import com.amk.rubikafollower.util.toPersianDigits
+import com.farsitel.bazaar.BazaarClientProxy
 import com.farsitel.bazaar.core.BazaarSignIn
 import com.farsitel.bazaar.core.model.BazaarSignInOptions
 import com.farsitel.bazaar.core.model.SignInOption
@@ -102,6 +103,18 @@ fun ProfileScreen() {
     } else {
 
         when {
+
+            !BazaarClientProxy.isBazaarInstalledOnDevice(context) -> {
+                LaunchedEffect(Unit) {
+                    Toast.makeText(
+                        context,
+                        "برای استفاده از برنامه لطفا کافه بازار را نصب کنید.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    BazaarClientProxy.showInstallBazaarView(context)
+                }
+            }
+
             isCheckingLogin -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -165,7 +178,7 @@ fun ProfileScreen() {
                     Column {
                         ProfileListItem("ارسال نظر", R.drawable.ic_star) {
                             val intent = Intent(Intent.ACTION_EDIT)
-                            intent.setData("bazaar://details?id=com.amk.followerbegir".toUri())
+                            intent.setData("bazaar://details?id=com.amk.rubikafollower".toUri())
                             intent.setPackage("com.farsitel.bazaar")
                             startActivity(context, intent, null)
                         }

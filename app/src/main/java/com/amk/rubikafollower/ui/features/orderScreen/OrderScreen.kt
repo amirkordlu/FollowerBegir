@@ -1,6 +1,7 @@
 package com.amk.rubikafollower.ui.features.orderScreen
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +56,7 @@ import com.amk.rubikafollower.util.getPersianStatus
 import com.amk.rubikafollower.util.getRemain
 import com.amk.rubikafollower.util.getStatusIconInfo
 import com.amk.rubikafollower.util.toPersianDigits
+import com.farsitel.bazaar.BazaarClientProxy
 import dev.burnoo.cokoin.navigation.getNavViewModel
 
 @Preview(showBackground = true)
@@ -112,6 +114,17 @@ fun OrderScreen() {
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
+            !BazaarClientProxy.isBazaarInstalledOnDevice(context) -> {
+                LaunchedEffect(Unit) {
+                    Toast.makeText(
+                        context,
+                        "برای استفاده از برنامه لطفا کافه بازار را نصب کنید.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    BazaarClientProxy.showInstallBazaarView(context)
+                }
+            }
+
             !hasInternet -> {
                 NoInternetSection(retryLoad)
             }
