@@ -53,6 +53,7 @@ fun getPersianStatus(status: String?): String {
         "Canceled" -> "لغو شده"
         "processing" -> "در حال پردازش"
         "Completed" -> "تکمیل شده"
+        "Not Start" -> "شروع نشده"
         else -> status
     }
 }

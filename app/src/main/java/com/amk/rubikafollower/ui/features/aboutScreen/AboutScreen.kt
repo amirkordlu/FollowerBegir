@@ -100,7 +100,7 @@ fun AboutAppCard() {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Text(
                     modifier = Modifier.padding(top = 4.dp, bottom = 10.dp),
-                    text = "فالوئربگیر روبیکا",
+                    text = "فالووربگیر روبیکا",
                     style = bodyMediumCard,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold
@@ -142,7 +142,7 @@ fun AboutTextCard() {
                         horizontal = 16.dp,
                         vertical = 16.dp
                     ),
-                    text = "از اینکه «فالوئربگیر روبیکا» رو برای رشد حساب کاربری خودتون انتخاب کردید، بسیار خوشحالیم. هدف ما اینه که کمکت کنیم تو روبیکا بیشتر دیده بشی و تعداد فالوئرهات رو خیلی سریع و راحت افزایش بدی.\n" +
+                    text = "از اینکه «فالووربگیر روبیکا» رو برای رشد حساب کاربری خودتون انتخاب کردید، بسیار خوشحالیم. هدف ما اینه که کمکت کنیم تو روبیکا بیشتر دیده بشی و تعداد فالوورهات رو خیلی سریع و راحت افزایش بدی.\n" +
                             "ما همیشه در حال بهتر کردن برنامه هستیم، پس اگه ایده\u200Cای داشتی یا با مشکلی روبرو شدی، حتما بهمون خبر بده. نظرت برامون خیلی ارزش داره❤\uFE0F",
                     style = bodySmallCard,
                     color = MaterialTheme.colorScheme.onSurface

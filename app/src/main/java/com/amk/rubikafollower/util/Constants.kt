@@ -13,5 +13,5 @@ val allowedServices = listOf(
     "2614", "2615", "2616", "2617", "2618", "2619", "2620", "2621", "2622", "2632"
 ).distinct()
 
-// 25% profit on services
-const val PROFIT_PERCENT = 1.25
+// 100% profit on services
+const val PROFIT_PERCENT = 2

@@ -47,7 +47,7 @@ class DetailScreenViewModel(
             isError.value = false
             orderMessage.value = null
             try {
-                val result = orderRepository.addOrderService(serviceId, link, quantity, 1)
+                val result = orderRepository.addOrderService(serviceId, link, quantity, 0)
                 if (result.status == "success") {
                     orderMessage.value = "✅ سفارش با موفقیت ثبت شد"
                     orderId.value = result.order
