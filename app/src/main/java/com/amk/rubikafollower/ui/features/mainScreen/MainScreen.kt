@@ -25,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.amk.rubikafollower.ui.features.aboutScreen.AboutScreen
 import com.amk.rubikafollower.ui.features.detailScreen.DetailScreen
+import com.amk.rubikafollower.ui.features.faqScreen.FaqScreen
 import com.amk.rubikafollower.ui.features.homeScreen.HomeScreen
 import com.amk.rubikafollower.ui.features.orderScreen.OrderScreen
 import com.amk.rubikafollower.ui.features.profileScreen.ProfileScreen
@@ -133,6 +134,9 @@ fun MainScreen() {
             }
             composable(MyScreens.AboutScreen.route) {
                 AboutScreen()
+            }
+            composable(MyScreens.FaqScreen.route) {
+                FaqScreen()
             }
             composable(
                 route = MyScreens.DetailScreen.route,

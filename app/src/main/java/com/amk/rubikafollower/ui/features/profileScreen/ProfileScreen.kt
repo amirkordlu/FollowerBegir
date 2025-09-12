@@ -182,7 +182,9 @@ fun ProfileScreen() {
                             intent.setPackage("com.farsitel.bazaar")
                             startActivity(context, intent, null)
                         }
-                        ProfileListItem("سوالات متداول", R.drawable.ic_faq) {}
+                        ProfileListItem("سوالات متداول", R.drawable.ic_faq) {
+                            navigation.navigate(MyScreens.FaqScreen.route)
+                        }
                         ProfileListItem("پشتیبانی", R.drawable.ic_support) {}
                         ProfileListItem("درباره ما", R.drawable.ic_about) {
                             navigation.navigate(MyScreens.AboutScreen.route)
