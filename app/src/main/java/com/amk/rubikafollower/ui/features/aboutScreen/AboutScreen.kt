@@ -1,5 +1,6 @@
 package com.amk.rubikafollower.ui.features.aboutScreen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,8 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +38,7 @@ import com.amk.rubikafollower.R
 import com.amk.rubikafollower.ui.theme.FollowerBegirTheme
 import com.amk.rubikafollower.ui.theme.bodyMediumCard
 import com.amk.rubikafollower.ui.theme.bodySmallCard
+import com.amk.rubikafollower.util.sendEmail
 
 @Preview(showBackground = true)
 @Composable
@@ -48,6 +54,8 @@ fun AboutScreenPreview() {
 
 @Composable
 fun AboutScreen() {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,8 +66,9 @@ fun AboutScreen() {
     ) {
         AboutAppCard()
         AboutTextCard()
-        AboutButton("معرفی به دوستان") {}
-        AboutButton("گزارش باگ") {}
+        AboutButton("گزارش باگ") {
+            sendEmail(context, "amir.kordlu@gmail.com")
+        }
         AboutDeveloperCard(
             "Designed by Stitch AI powered by Google" +
                     "\n<Developed by AMK/>"
@@ -85,13 +94,13 @@ fun AboutAppCard() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CircleIconCart(
-                ImageVector.vectorResource(R.drawable.ic_wallet)
+                icon = painterResource(id = R.drawable.img_app_icon)
             )
 
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 Text(
                     modifier = Modifier.padding(top = 4.dp, bottom = 10.dp),
-                    text = "فالوئر بگیر روبیکا",
+                    text = "فالوئربگیر روبیکا",
                     style = bodyMediumCard,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold
@@ -115,7 +124,7 @@ fun AboutTextCard() {
         shadowElevation = 2.dp,
         modifier = Modifier
             .fillMaxWidth(0.96f)
-            .height(240.dp)
+            .height(250.dp)
             .padding(vertical = 8.dp),
         color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp)
@@ -133,7 +142,8 @@ fun AboutTextCard() {
                         horizontal = 16.dp,
                         vertical = 16.dp
                     ),
-                    text = "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد.",
+                    text = "از اینکه «فالوئربگیر روبیکا» رو برای رشد حساب کاربری خودتون انتخاب کردید، بسیار خوشحالیم. هدف ما اینه که کمکت کنیم تو روبیکا بیشتر دیده بشی و تعداد فالوئرهات رو خیلی سریع و راحت افزایش بدی.\n" +
+                            "ما همیشه در حال بهتر کردن برنامه هستیم، پس اگه ایده\u200Cای داشتی یا با مشکلی روبرو شدی، حتما بهمون خبر بده. نظرت برامون خیلی ارزش داره❤\uFE0F",
                     style = bodySmallCard,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -149,10 +159,10 @@ fun AboutButton(buttonText: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth(0.96f)
             .height(80.dp)
-            .padding(vertical = 8.dp)
-            .clickable { onClick.invoke() },
+            .padding(vertical = 8.dp),
         color = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(20.dp),
+        onClick = { onClick.invoke() }
     ) {
         Row(
             Modifier
@@ -185,10 +195,10 @@ fun AboutDeveloperCard(buttonText: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth(0.96f)
             .height(80.dp)
-            .padding(vertical = 8.dp)
-            .clickable { onClick.invoke() },
+            .padding(vertical = 8.dp),
         color = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(20.dp),
+        onClick = { onClick.invoke() }
     ) {
         Column(
             modifier = Modifier
@@ -208,18 +218,18 @@ fun AboutDeveloperCard(buttonText: String, onClick: () -> Unit) {
 
 @Composable
 fun CircleIconCart(
-    icon: ImageVector
+    icon: Painter
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .size(80.dp)
+        modifier = Modifier.size(80.dp)
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(36.dp),
-            tint = MaterialTheme.colorScheme.primary
+        Image(
+            painter = icon,
+            contentDescription = "App Icon",
+            modifier = Modifier
+                .size(64.dp)
+                .clip(RoundedCornerShape(12.dp))
         )
     }
 }

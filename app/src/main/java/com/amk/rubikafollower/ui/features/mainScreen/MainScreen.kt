@@ -30,6 +30,7 @@ import com.amk.rubikafollower.ui.features.homeScreen.HomeScreen
 import com.amk.rubikafollower.ui.features.orderScreen.OrderScreen
 import com.amk.rubikafollower.ui.features.profileScreen.ProfileScreen
 import com.amk.rubikafollower.ui.features.profileScreen.ShopScreen
+import com.amk.rubikafollower.ui.features.supportScreen.SupportScreen
 import com.amk.rubikafollower.ui.theme.FollowerBegirTheme
 import com.amk.rubikafollower.ui.theme.navigationBarTextStyle
 import com.amk.rubikafollower.util.MyScreens
@@ -137,6 +138,9 @@ fun MainScreen() {
             }
             composable(MyScreens.FaqScreen.route) {
                 FaqScreen()
+            }
+            composable(MyScreens.SupportScreen.route) {
+                SupportScreen()
             }
             composable(
                 route = MyScreens.DetailScreen.route,

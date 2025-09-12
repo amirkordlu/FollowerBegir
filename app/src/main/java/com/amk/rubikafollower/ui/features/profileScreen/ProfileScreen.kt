@@ -185,7 +185,9 @@ fun ProfileScreen() {
                         ProfileListItem("سوالات متداول", R.drawable.ic_faq) {
                             navigation.navigate(MyScreens.FaqScreen.route)
                         }
-                        ProfileListItem("پشتیبانی", R.drawable.ic_support) {}
+                        ProfileListItem("پشتیبانی", R.drawable.ic_support) {
+                            navigation.navigate(MyScreens.SupportScreen.route)
+                        }
                         ProfileListItem("درباره ما", R.drawable.ic_about) {
                             navigation.navigate(MyScreens.AboutScreen.route)
                         }

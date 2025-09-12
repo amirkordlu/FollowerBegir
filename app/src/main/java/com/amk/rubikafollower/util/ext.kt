@@ -1,5 +1,8 @@
 package com.amk.rubikafollower.util
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.text.Spanned
 import android.util.Log
 import androidx.compose.ui.graphics.Color
@@ -10,6 +13,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.text.HtmlCompat
 import androidx.core.text.parseAsHtml
 import com.amk.rubikafollower.R
@@ -106,3 +110,8 @@ val iconColorPairs = listOf(
     Pair(Color(0xFFFBE9E7), Color(0xFFF4511E)),
     Pair(Color(0xFFEDE7F6), Color(0xFF5E35B1))
 )
+
+fun sendEmail(context: Context, email: String) {
+    val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", email, null))
+    startActivity(context, Intent.createChooser(emailIntent, "Send Email..."), null)
+}

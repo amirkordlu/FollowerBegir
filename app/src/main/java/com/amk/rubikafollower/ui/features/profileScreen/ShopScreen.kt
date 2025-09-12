@@ -59,6 +59,7 @@ import com.amk.rubikafollower.ui.theme.bodySmallCard
 import com.amk.rubikafollower.util.MyScreens
 import com.amk.rubikafollower.util.RSA_KEY
 import com.amk.rubikafollower.util.formatBalanceWithCommas
+import com.amk.rubikafollower.util.sendEmail
 import com.amk.rubikafollower.util.toPersianDigits
 import com.maxkeppeker.sheets.core.CoreDialog
 import com.maxkeppeker.sheets.core.models.CoreSelection
@@ -606,7 +607,7 @@ fun ShopScreen() {
             modifier = Modifier
                 .padding(vertical = 24.dp)
                 .clickable {
-//                   sendEmail(context,"amir.kordlu@gmail.com")
+                   sendEmail(context,"amir.kordlu@gmail.com")
                 },
             text = "نیاز به پشتیبانی داری؟ کلیک کن",
             style = bodySmallCard,

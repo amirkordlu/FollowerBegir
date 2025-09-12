@@ -53,7 +53,7 @@ fun FaqScreen() {
 
         Text(
             modifier = Modifier
-                .padding(end = 16.dp)
+                .padding(end = 16.dp, top = 16.dp)
                 .align(Alignment.End),
             text = "سوالات متداول",
             style = bodyLargeCard,
