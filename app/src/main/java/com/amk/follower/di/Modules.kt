@@ -10,6 +10,7 @@ import com.amk.follower.model.repository.serviceItemsRepository.ServiceItemsRepo
 import com.amk.follower.ui.features.detailScreen.DetailScreenViewModel
 import com.amk.follower.ui.features.homeScreen.HomeScreenViewModel
 import com.amk.follower.ui.features.orderScreen.OrderScreenViewModel
+import com.amk.follower.ui.features.platformServicesScreen.PlatformServicesViewModel
 import com.amk.follower.ui.features.profileScreen.AccountViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -23,6 +24,12 @@ val myModules = module {
     single<AddOrderServiceRepository> { AddOrderServiceRepositoryImpl(get()) }
 
     single<OrderStatusRepository> { OrderStatusRepositoryImpl(get()) }
+
+    viewModel {
+        PlatformServicesViewModel(
+            servicesRepository = get()
+        )
+    }
 
     viewModel { HomeScreenViewModel(allServiceItems = get()) }
 

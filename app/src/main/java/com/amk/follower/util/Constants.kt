@@ -7,11 +7,5 @@ const val BASE_URL = "https://panel.followeran.com/"
 
 const val API_KEY = "ziF9gL7Tz_yngnfDUIoZcf7YoXqXMSd7"
 
-// Services list
-val allowedServices = listOf(
-    "1312", "2137", "2641", "1305", "1339", "1442", "1901", "2047", "2048", "2049", "2147", "1443", "1902", "2410",
-    "2614", "2615", "2616", "2617", "2618", "2619", "2620", "2621", "2622", "2632"
-).distinct()
-
 // 100% profit on services
 const val PROFIT_PERCENT = 2

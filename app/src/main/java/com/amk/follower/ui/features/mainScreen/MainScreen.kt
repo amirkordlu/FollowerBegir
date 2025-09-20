@@ -27,7 +27,9 @@ import com.amk.follower.ui.features.aboutScreen.AboutScreen
 import com.amk.follower.ui.features.detailScreen.DetailScreen
 import com.amk.follower.ui.features.faqScreen.FaqScreen
 import com.amk.follower.ui.features.homeScreen.HomeScreen
+import com.amk.follower.ui.features.notificationScreen.NotificationScreen
 import com.amk.follower.ui.features.orderScreen.OrderScreen
+import com.amk.follower.ui.features.platformServicesScreen.PlatformServicesScreen
 import com.amk.follower.ui.features.profileScreen.ProfileScreen
 import com.amk.follower.ui.features.profileScreen.ShopScreen
 import com.amk.follower.ui.features.supportScreen.SupportScreen
@@ -154,6 +156,17 @@ fun MainScreen() {
             }
             composable(MyScreens.SupportScreen.route) {
                 SupportScreen()
+            }
+            composable(MyScreens.NotificationScreen.route) {
+                NotificationScreen()
+            }
+            composable(
+                route = MyScreens.PlatformServicesScreen.route,
+                arguments = listOf(navArgument("platformId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val platformId = backStackEntry.arguments?.getString("platformId")
+                requireNotNull(platformId) { "platformId parameter wasn't found." }
+                PlatformServicesScreen(platformId = platformId)
             }
             composable(
                 route = MyScreens.DetailScreen.route,

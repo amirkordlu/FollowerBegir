@@ -9,7 +9,11 @@ sealed class MyScreens(val route: String) {
     object AboutScreen : MyScreens("aboutScreen")
     object FaqScreen : MyScreens("faqScreen")
     object SupportScreen : MyScreens("supportScreen")
+    object NotificationScreen : MyScreens("notificationScreen")
     object DetailScreen : MyScreens("detail/{serviceId}") {
         fun createRoute(serviceId: String) = "detail/$serviceId"
+    }
+    object PlatformServicesScreen : MyScreens("platform_services/{platformId}") {
+        fun createRoute(platformId: String) = "platform_services/$platformId"
     }
 }

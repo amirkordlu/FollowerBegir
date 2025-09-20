@@ -66,9 +66,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.HtmlCompat
 import com.amk.follower.R
-import com.amk.follower.ui.features.homeScreen.EmptyServiceSection
 import com.amk.follower.ui.features.orderScreen.ErrorSection
 import com.amk.follower.ui.features.orderScreen.NoInternetSection
+import com.amk.follower.ui.features.platformServicesScreen.EmptyServiceSection
 import com.amk.follower.ui.features.profileScreen.AccountViewModel
 import com.amk.follower.ui.theme.FollowerBegirTheme
 import com.amk.follower.ui.theme.bodyLargeCard

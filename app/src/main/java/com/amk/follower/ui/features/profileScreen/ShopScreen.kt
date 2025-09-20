@@ -83,14 +83,6 @@ fun ShopScreenPreview() {
 @SuppressLint("ResourceAsColor")
 @Composable
 fun ShopScreen() {
-    val navigation = getNavController()
-    BackHandler(enabled = true) {
-        navigation.navigate(MyScreens.ProfileScreen.route) {
-            popUpTo(MyScreens.ProfileScreen.route) {
-                inclusive = true
-            }
-        }
-    }
     val context = LocalContext.current
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val activityResultRegistry =
