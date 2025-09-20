@@ -15,7 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -72,6 +78,7 @@ fun OrderScreenPreview() {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun OrderScreen() {
@@ -90,6 +97,7 @@ fun OrderScreen() {
     val isOrderError = orderViewModel.isError.value
 
     var hasInternet by remember { mutableStateOf(true) }
+    var isRefreshing by remember { mutableStateOf(false) }
 
     val retryLoad = {
         hasInternet = NetworkChecker(context).isInternetConnected
@@ -99,11 +107,22 @@ fun OrderScreen() {
         }
     }
 
+    val onRefresh = {
+        isRefreshing = true
+        retryLoad()
+    }
+
+    val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = onRefresh)
+
     LaunchedEffect(Unit) {
         retryLoad()
     }
 
-    // if (isLoggedIn && orderNumbers.isNotEmpty() && orderStatuses.isEmpty()) {
+    LaunchedEffect(isCheckingLogin, isAccountLoading, isOrderLoading) {
+        if (!isCheckingLogin && !isAccountLoading && !isOrderLoading) {
+            isRefreshing = false
+        }
+    }
 
     LaunchedEffect(orderNumbers) {
         if (isLoggedIn && orderNumbers.isNotEmpty()) {
@@ -112,7 +131,11 @@ fun OrderScreen() {
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)
+    ) {
         when {
             !BazaarClientProxy.isBazaarInstalledOnDevice(context) -> {
                 LaunchedEffect(Unit) {
@@ -129,7 +152,7 @@ fun OrderScreen() {
                 NoInternetSection(retryLoad)
             }
 
-            isCheckingLogin || isAccountLoading || isOrderLoading -> {
+            (isCheckingLogin || isAccountLoading || isOrderLoading) && !isRefreshing -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
 
@@ -149,7 +172,7 @@ fun OrderScreen() {
             }
 
             else -> {
-                val orderStatusList = orderStatuses.values.toList()
+                val orderStatusList = orderStatuses.values.toList().sortedByDescending { it.order }
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -162,6 +185,14 @@ fun OrderScreen() {
                 }
             }
         }
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            backgroundColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary
+        )
     }
 }
 
@@ -171,8 +202,8 @@ fun OrderStatusCard(orderStatus: OrderStatusResponse) {
     val clipboardManager = LocalClipboardManager.current
     val orderNumber = orderStatus.order.toPersianDigits()
     val statusText = getPersianStatus(orderStatus.status)
-    val remains = getRemain(orderStatus.remains).toString()
-    val startCount = getRemain(orderStatus.start_count).toString()
+    val remains = getRemain(orderStatus.remains).toString().toPersianDigits()
+    val startCount = getRemain(orderStatus.start_count).toString().toPersianDigits()
     val statusIconInfo = getStatusIconInfo(orderStatus.status)
 
     val copyText = """
@@ -341,6 +372,7 @@ fun EmptyOrderSection() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -378,11 +410,11 @@ fun NoInternetSection(onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_internet_off),
             contentDescription = null,
@@ -422,6 +454,7 @@ fun NoLoginSection() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -459,6 +492,7 @@ fun ErrorSection(onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally

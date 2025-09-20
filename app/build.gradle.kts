@@ -94,4 +94,7 @@ dependencies {
     // Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
+    // Pull to Refresh
+    implementation("androidx.compose.material:material:1.9.1")
+
 }
