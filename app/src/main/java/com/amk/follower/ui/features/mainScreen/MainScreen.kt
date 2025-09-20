@@ -14,12 +14,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
@@ -51,9 +51,19 @@ fun MainScreenPreview() {
 
 @Composable
 fun MainScreen() {
-    val navigation = rememberNavController()
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
-    var selectedItemIndex by rememberSaveable { mutableStateOf(1) }
+    val screensWithBottomBar = listOf(
+        MyScreens.OrderScreen.route,
+        MyScreens.MainScreen.route,
+        MyScreens.ProfileScreen.route
+    )
+
+    val shouldShowBottomBar = currentDestination?.hierarchy?.any { dest ->
+        screensWithBottomBar.contains(dest.route)
+    } == true
 
     val items = navigationBarItems
     val screens = listOf(
@@ -64,60 +74,63 @@ fun MainScreen() {
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                items.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        selected = selectedItemIndex == index,
-                        onClick = {
-                            selectedItemIndex = index
-                            val screen = screens[index]
-                            navigation.navigate(screen.route) {
-                                popUpTo(navigation.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        label = {
-                            Text(
-                                text = item.title,
-                                style = navigationBarTextStyle,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        },
-                        icon = {
-                            BadgedBox(
-                                badge = {
-                                    if (item.badgeCount != null) {
-                                        Badge { Text(item.badgeCount.toString()) }
-                                    } else if (item.hasNews) {
-                                        Badge()
+            if (shouldShowBottomBar) {
+                NavigationBar {
+                    items.forEachIndexed { index, item ->
+                        val screen = screens[index]
+                        val isSelected =
+                            currentDestination.hierarchy.any { it.route == screen.route }
+                        NavigationBarItem(
+                            selected = isSelected,
+                            onClick = {
+                                navController.navigate(screen.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
                                     }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = if (selectedItemIndex == index)
-                                        item.selectedIcon
-                                    else item.unSelectedIcon,
-                                    contentDescription = item.title
+                            },
+                            label = {
+                                Text(
+                                    text = item.title,
+                                    style = navigationBarTextStyle,
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
-                            }
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            selectedTextColor = MaterialTheme.colorScheme.onSurface,
-                            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                            icon = {
+                                BadgedBox(
+                                    badge = {
+                                        if (item.badgeCount != null) {
+                                            Badge { Text(item.badgeCount.toString()) }
+                                        } else if (item.hasNews) {
+                                            Badge()
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = if (isSelected)
+                                            item.selectedIcon
+                                        else item.unSelectedIcon,
+                                        contentDescription = item.title
+                                    )
+                                }
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
     ) { paddingValues ->
         KoinNavHost(
-            navController = navigation,
+            navController = navController,
             startDestination = MyScreens.MainScreen.route,
             modifier = Modifier.padding(paddingValues)
         ) {
