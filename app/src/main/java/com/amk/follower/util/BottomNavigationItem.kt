@@ -22,7 +22,7 @@ val navigationBarItems = listOf(
         "سفارشات",
         Icons.Filled.ShoppingCart,
         Icons.Outlined.ShoppingCart,
-        true
+        false
     ),
     BottomNavigationItem(
         "خانه",
