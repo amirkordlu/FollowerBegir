@@ -65,6 +65,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,6 +83,7 @@ import com.amk.follower.ui.theme.bodyMediumCard
 import com.amk.follower.ui.theme.bodySmallCard
 import com.amk.follower.ui.theme.customColors
 import com.amk.follower.ui.theme.textFieldStyle
+import com.amk.follower.util.MyScreens
 import com.amk.follower.util.NetworkChecker
 import com.amk.follower.util.PROFIT_PERCENT
 import com.amk.follower.util.formatBalanceWithCommas
@@ -422,7 +424,9 @@ fun DetailScreen(serviceId: String?) {
                                 ((quantityValue.toFloat() / 1000f) * (detail.rate * PROFIT_PERCENT)).toInt()
 
                             val buttonText = if (finalPrice > 0 && quantityError.value.isEmpty()) {
-                                "ثبت سفارش | ${finalPrice.formatBalanceWithCommas().toPersianDigits()} تومان"
+                                "ثبت سفارش | ${
+                                    finalPrice.formatBalanceWithCommas().toPersianDigits()
+                                } تومان"
                             } else {
                                 "ثبت سفارش"
                             }
@@ -468,7 +472,9 @@ fun DetailScreen(serviceId: String?) {
                                     text = buttonText,
                                     style = bodyMediumCard,
                                     fontSize = 18.sp,
-                                    color = MaterialTheme.colorScheme.onPrimary
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.StartEllipsis
                                 )
                             }
 
@@ -498,6 +504,7 @@ fun DetailScreen(serviceId: String?) {
                                             ).show()
                                             showConfirmDialog.value = false
                                             hasReadDescription.value = false
+                                            navigation.navigate(MyScreens.ProfileScreen.route)
                                             return@Button
                                         }
 
@@ -526,6 +533,7 @@ fun DetailScreen(serviceId: String?) {
                                                 Toast.LENGTH_LONG
                                             ).show()
                                             showConfirmDialog.value = false
+                                            navigation.navigate(MyScreens.ShopScreen.route)
                                         }
                                     },
                                     enabled = hasReadDescription.value
