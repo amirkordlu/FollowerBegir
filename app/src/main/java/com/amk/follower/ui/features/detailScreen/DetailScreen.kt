@@ -27,12 +27,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -42,6 +47,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,8 +86,10 @@ import com.amk.follower.util.NetworkChecker
 import com.amk.follower.util.PROFIT_PERCENT
 import com.amk.follower.util.formatBalanceWithCommas
 import com.amk.follower.util.toPersianDigits
+import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
 @Composable
@@ -100,6 +108,7 @@ fun DetailScreenPreview() {
 fun DetailScreen(serviceId: String?) {
     val viewModel = getNavViewModel<DetailScreenViewModel>()
     val accountViewModel = getNavViewModel<AccountViewModel>()
+    val navigation = getNavController()
     val detail = viewModel.itemDetail.value
     val isLoading = viewModel.isLoading.value
     val isError = viewModel.isError.value
@@ -152,415 +161,475 @@ fun DetailScreen(serviceId: String?) {
         }
 
         detail != null -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
-            ) {
-                if (orderMessage != null) {
-                    OrderMessagePopup(
-                        message = orderMessage,
-                        isError = isError
-                    ) {
-                        viewModel.orderMessage.value = null
-                    }
-                }
+            val scrollState = rememberScrollState()
+            val coroutineScope = rememberCoroutineScope()
 
-                Text(
-                    text = "ثبت سفارش",
-                    style = bodyLargeCard,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
                     modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(bottom = 20.dp)
-                )
-
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surface,
-                    shadowElevation = 2.dp,
-                    modifier = Modifier.fillMaxWidth()
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 80.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 22.dp, vertical = 12.dp),
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(vertical = 14.dp),
-                            text = "مشخصات سرویس",
-                            style = bodyLargeCard,
-                            fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                    if (orderMessage != null) {
+                        OrderMessagePopup(
+                            message = orderMessage,
+                            isError = isError
                         ) {
-                            Text(
-                                modifier = Modifier.padding(16.dp),
-                                text = detail.name,
-                                style = bodySmallCard.copy(textDirection = TextDirection.Rtl),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                modifier = Modifier.padding(16.dp),
-                                text = "نام سرویس",
-                                style = bodySmallCard,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            viewModel.orderMessage.value = null
                         }
-
-
-                        val serviceRateWithProfit = (detail.rate * PROFIT_PERCENT).toInt()
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                modifier = Modifier.padding(16.dp),
-                                text = serviceRateWithProfit.formatBalanceWithCommas()
-                                    .toPersianDigits() + " تومان",
-                                style = bodySmallCard.copy(textDirection = TextDirection.Rtl),
-                                color = MaterialTheme.customColors.success
-                            )
-                            Text(
-                                modifier = Modifier.padding(16.dp),
-                                text = "قیمت (هر هزار تا)",
-                                style = bodySmallCard,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text(
-                            "توضیحات",
-                            style = bodyMediumCard,
-                            fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        HtmlDescriptionView(detail.desc)
                     }
-                }
 
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surface,
-                    shadowElevation = 2.dp,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 22.dp, vertical = 12.dp),
-                        horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.Center
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 0.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            modifier = Modifier.padding(vertical = 14.dp),
-                            text = "آیدی پیج یا لینک",
-                            style = bodyMediumCard,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        OutlinedTextField(
-                            value = pageId.value,
-                            onValueChange = {
-                                pageId.value = it
-                                pageIdError.value = if (it.any { ch -> ch in 'آ'..'ی' }) {
-                                    "لطفاً فقط از حروف انگلیسی، اعداد یا کاراکترهای مجاز استفاده کنید"
-                                } else ""
-                            },
-                            isError = pageIdError.value.isNotEmpty(),
-                            placeholder = {
-                                Text(
-                                    text = "آیدی پیج یا لینک را وارد کنید",
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Right,
-                                    style = textFieldStyle,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            supportingText = {
-                                if (pageIdError.value.isNotEmpty()) {
-                                    Text(
-                                        pageIdError.value,
-                                        color = MaterialTheme.colorScheme.error,
-                                        style = bodySmallCard,
-                                        textAlign = TextAlign.End,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .align(Alignment.End)
-                                    )
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            maxLines = 1,
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
-                            ),
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource((R.drawable.ic_insert_link)),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Text(
-                            modifier = Modifier.padding(bottom = 14.dp),
-                            text = "تعداد سفارش" + " (${detail.min} تا ${detail.max})",
-                            style = bodyMediumCard,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        OutlinedTextField(
-                            value = quantity.value,
-                            onValueChange = {
-                                quantity.value = it
-                                quantityError.value = if (it.isNotBlank()) {
-                                    val intVal = it.toIntOrNull()
-                                    if (intVal == null || intVal !in detail.min..detail.max) {
-                                        "تعداد باید بین ${detail.min} تا ${detail.max} باشد"
-                                    } else ""
-                                } else ""
-                            },
-                            isError = quantityError.value.isNotEmpty(),
-                            placeholder = {
-                                Text(
-                                    text = "تعداد مورد نظر را وارد کنید",
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Right,
-                                    style = textFieldStyle,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            supportingText = {
-                                if (quantityError.value.isNotEmpty()) {
-                                    Text(
-                                        quantityError.value,
-                                        color = MaterialTheme.colorScheme.error,
-                                        style = bodySmallCard,
-                                        textAlign = TextAlign.End,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .align(Alignment.End)
-                                    )
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
-                            ),
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource((R.drawable.ic_numbers)),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            shape = RoundedCornerShape(10.dp),
-                        )
-
-                        Spacer(modifier = Modifier.height(14.dp))
-
-                        Button(
-                            onClick = {
-                                val isPageIdValid =
-                                    pageId.value.isNotBlank() && pageIdError.value.isEmpty()
-                                val isQuantityValid = quantity.value.toIntOrNull()
-                                    ?.let { it in detail.min..detail.max } == true
-
-                                if (!isPageIdValid || !isQuantityValid) {
-                                    if (pageId.value.isBlank()) pageIdError.value =
-                                        "لطفا آیدی را وارد کنید"
-                                    if (quantity.value.isBlank()) quantityError.value =
-                                        "لطفا تعداد سفارش را وارد کنید"
-                                    Toast.makeText(
-                                        context,
-                                        "موارد وارد شده را بررسی کنید",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } else {
-                                    showConfirmDialog.value = true
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
+                        IconButton(onClick = { navigation.navigateUp() }) {
                             Icon(
-                                painterResource(R.drawable.ic_shopping_cart_checkout),
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
-                            Spacer(modifier = Modifier.padding(end = 8.dp))
-                            Text(
-                                text = "ثبت سفارش",
-                                style = bodyMediumCard,
-                                fontSize = 18.sp,
-                                color = MaterialTheme.colorScheme.onPrimary
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(14.dp))
+                        Text(
+                            text = "ثبت سفارش",
+                            style = bodyLargeCard,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
                     }
-                }
 
-                if (showConfirmDialog.value) {
-                    val quantityValue = quantity.value.toIntOrNull() ?: 0
-                    val totalPriceWithProfit = (quantityValue.toFloat() / 1000f) * (detail.rate * PROFIT_PERCENT)
-                    val finalPrice = totalPriceWithProfit.toInt()
-
-                    AlertDialog(
-                        onDismissRequest = {
-                            showConfirmDialog.value = false
-                            hasReadDescription.value = false
-                        },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    if (!accountViewModel.hasLogin.value) {
-                                        Toast.makeText(
-                                            context,
-                                            "برای ثبت سفارش باید وارد حساب کاربری خود شوید.",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                        showConfirmDialog.value = false
-                                        hasReadDescription.value = false
-                                        return@Button
-                                    }
-
-                                    val currentWallet = accountViewModel.wallet.value
-                                    if (currentWallet >= finalPrice) {
-                                        accountViewModel.decreaseWallet(
-                                            context,
-                                            lifecycleOwner,
-                                            finalPrice,
-                                            onError = {
-                                                Toast.makeText(context, it, Toast.LENGTH_SHORT)
-                                                    .show()
-                                            })
-                                        viewModel.addOrderService(
-                                            serviceId?.toInt() ?: 0,
-                                            pageId.value,
-                                            quantityValue
-                                        )
-
-                                        showConfirmDialog.value = false
-                                        hasReadDescription.value = false
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "موجودی کیف پول کافی نیست. لطفاً آن را شارژ کنید.",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                        showConfirmDialog.value = false
-                                    }
-                                },
-                                enabled = hasReadDescription.value
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        shadowElevation = 2.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.End,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                text = "مشخصات سرویس",
+                                style = bodyLargeCard,
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .padding(16.dp),
+                                horizontalAlignment = Alignment.End
                             ) {
                                 Text(
-                                    "آره، ثبت کن",
+                                    text = "نام سرویس",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(bottom = 4.dp),
+                                    fontFamily = FontFamily(Font(R.font.dana_medium))
+                                )
+                                Text(
+                                    text = detail.name,
+                                    style = MaterialTheme.typography.bodyMedium.copy(textDirection = TextDirection.Rtl),
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontFamily = FontFamily(Font(R.font.dana_medium))
                                 )
                             }
-                        },
-                        dismissButton = {
-                            Button(onClick = {
-                                showConfirmDialog.value = false
-                                hasReadDescription.value = false
-                            }) {
-                                Text("خیر", fontFamily = FontFamily(Font(R.font.dana_medium)))
+
+                            val serviceRateWithProfit = (detail.rate * PROFIT_PERCENT).toInt()
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.customColors.successContainer)
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = serviceRateWithProfit.formatBalanceWithCommas()
+                                        .toPersianDigits() + " تومان",
+                                    style = MaterialTheme.typography.titleMedium.copy(textDirection = TextDirection.Rtl),
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.customColors.onSuccessContainer,
+                                    fontFamily = FontFamily(Font(R.font.dana_medium))
+                                )
+                                Text(
+                                    text = "قیمت (هر هزار تا)",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.customColors.onSuccessContainer,
+                                    fontFamily = FontFamily(Font(R.font.dana_medium))
+                                )
                             }
-                        },
-                        title = {
+                        }
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        shadowElevation = 2.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 22.dp, vertical = 12.dp),
+                            horizontalAlignment = Alignment.End
+                        ) {
                             Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = "ثبت سفارش",
-                                style = bodyLargeCard,
-                                textAlign = TextAlign.Right,
+                                "توضیحات",
+                                style = bodyMediumCard,
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.padding(vertical = 14.dp)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            HtmlDescriptionView(detail.desc)
+                        }
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        shadowElevation = 2.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 22.dp, vertical = 12.dp),
+                            horizontalAlignment = Alignment.End,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(vertical = 14.dp),
+                                text = "آیدی پیج یا لینک",
+                                style = bodyMediumCard,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                        },
-                        text = {
-                            Column {
+                            OutlinedTextField(
+                                value = pageId.value,
+                                onValueChange = {
+                                    pageId.value = it
+                                    pageIdError.value = if (it.any { ch -> ch in 'آ'..'ی' }) {
+                                        "لطفاً فقط از حروف انگلیسی، اعداد یا کاراکترهای مجاز استفاده کنید"
+                                    } else ""
+                                },
+                                isError = pageIdError.value.isNotEmpty(),
+                                placeholder = {
+                                    Text(
+                                        text = "آیدی پیج یا لینک را وارد کنید",
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = TextAlign.Right,
+                                        style = textFieldStyle,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                supportingText = {
+                                    if (pageIdError.value.isNotEmpty()) {
+                                        Text(
+                                            pageIdError.value,
+                                            color = MaterialTheme.colorScheme.error,
+                                            style = bodySmallCard,
+                                            textAlign = TextAlign.End,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .align(Alignment.End)
+                                        )
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true,
+                                maxLines = 1,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
+                                ),
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource((R.drawable.ic_insert_link)),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                shape = RoundedCornerShape(10.dp),
+                            )
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Text(
+                                modifier = Modifier.padding(bottom = 14.dp),
+                                text = "تعداد سفارش" + " (${detail.min} تا ${detail.max})",
+                                style = bodyMediumCard,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            OutlinedTextField(
+                                value = quantity.value,
+                                onValueChange = {
+                                    quantity.value = it
+                                    quantityError.value = if (it.isNotBlank()) {
+                                        val intVal = it.toIntOrNull()
+                                        if (intVal == null || intVal !in detail.min..detail.max) {
+                                            "تعداد باید بین ${detail.min} تا ${detail.max} باشد"
+                                        } else ""
+                                    } else ""
+                                },
+                                isError = quantityError.value.isNotEmpty(),
+                                placeholder = {
+                                    Text(
+                                        text = "تعداد مورد نظر را وارد کنید",
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = TextAlign.Right,
+                                        style = textFieldStyle,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                supportingText = {
+                                    if (quantityError.value.isNotEmpty()) {
+                                        Text(
+                                            quantityError.value,
+                                            color = MaterialTheme.colorScheme.error,
+                                            style = bodySmallCard,
+                                            textAlign = TextAlign.End,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .align(Alignment.End)
+                                        )
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
+                                ),
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource((R.drawable.ic_numbers)),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                shape = RoundedCornerShape(10.dp),
+                            )
+
+                            Spacer(modifier = Modifier.height(14.dp))
+
+                            val quantityValue = quantity.value.toIntOrNull() ?: 0
+                            val finalPrice =
+                                ((quantityValue.toFloat() / 1000f) * (detail.rate * PROFIT_PERCENT)).toInt()
+
+                            val buttonText = if (finalPrice > 0 && quantityError.value.isEmpty()) {
+                                "ثبت سفارش | ${finalPrice.formatBalanceWithCommas().toPersianDigits()} تومان"
+                            } else {
+                                "ثبت سفارش"
+                            }
+
+                            Button(
+                                onClick = {
+                                    val isPageIdValid =
+                                        pageId.value.isNotBlank() && pageIdError.value.isEmpty()
+                                    val isQuantityValid = quantity.value.toIntOrNull()
+                                        ?.let { it in detail.min..detail.max } == true
+
+                                    if (!isPageIdValid || !isQuantityValid) {
+                                        if (pageId.value.isBlank()) pageIdError.value =
+                                            "لطفا آیدی را وارد کنید"
+                                        if (quantity.value.isBlank()) quantityError.value =
+                                            "لطفا تعداد سفارش را وارد کنید"
+                                        Toast.makeText(
+                                            context,
+                                            "موارد وارد شده را بررسی کنید",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    } else {
+                                        showConfirmDialog.value = true
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            ) {
+                                Icon(
+                                    painterResource(R.drawable.ic_shopping_cart_checkout),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                                Spacer(modifier = Modifier.padding(end = 8.dp))
+                                Text(
+                                    text = buttonText,
+                                    style = bodyMediumCard,
+                                    fontSize = 18.sp,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(14.dp))
+                        }
+                    }
+
+                    if (showConfirmDialog.value) {
+                        val quantityValue = quantity.value.toIntOrNull() ?: 0
+                        val totalPriceWithProfit =
+                            (quantityValue.toFloat() / 1000f) * (detail.rate * PROFIT_PERCENT)
+                        val finalPrice = totalPriceWithProfit.toInt()
+
+                        AlertDialog(
+                            onDismissRequest = {
+                                showConfirmDialog.value = false
+                                hasReadDescription.value = false
+                            },
+                            confirmButton = {
+                                Button(
+                                    onClick = {
+                                        if (!accountViewModel.hasLogin.value) {
+                                            Toast.makeText(
+                                                context,
+                                                "برای ثبت سفارش باید وارد حساب کاربری خود شوید.",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            showConfirmDialog.value = false
+                                            hasReadDescription.value = false
+                                            return@Button
+                                        }
+
+                                        val currentWallet = accountViewModel.wallet.value
+                                        if (currentWallet >= finalPrice) {
+                                            accountViewModel.decreaseWallet(
+                                                context,
+                                                lifecycleOwner,
+                                                finalPrice,
+                                                onError = {
+                                                    Toast.makeText(context, it, Toast.LENGTH_SHORT)
+                                                        .show()
+                                                })
+                                            viewModel.addOrderService(
+                                                serviceId?.toInt() ?: 0,
+                                                pageId.value,
+                                                quantityValue
+                                            )
+
+                                            showConfirmDialog.value = false
+                                            hasReadDescription.value = false
+                                        } else {
+                                            Toast.makeText(
+                                                context,
+                                                "موجودی کیف پول کافی نیست. لطفاً آن را شارژ کنید.",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                            showConfirmDialog.value = false
+                                        }
+                                    },
+                                    enabled = hasReadDescription.value
+                                ) {
+                                    Text(
+                                        "آره، ثبت کن",
+                                        fontFamily = FontFamily(Font(R.font.dana_medium))
+                                    )
+                                }
+                            },
+                            dismissButton = {
+                                Button(onClick = {
+                                    showConfirmDialog.value = false
+                                    hasReadDescription.value = false
+                                }) {
+                                    Text("خیر", fontFamily = FontFamily(Font(R.font.dana_medium)))
+                                }
+                            },
+                            title = {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = "آیا از ثبت این سفارش مطمئنی؟",
-                                    style = bodyMediumCard,
+                                    text = "ثبت سفارش",
+                                    style = bodyLargeCard,
                                     textAlign = TextAlign.Right,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = "قیمت نهایی سفارش: ${
-                                        finalPrice.formatBalanceWithCommas().toPersianDigits()
-                                    } تومان",
-                                    style = bodyMediumCard,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    textAlign = TextAlign.Right
-                                )
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            hasReadDescription.value = !hasReadDescription.value
-                                        },
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.End
-                                ) {
+                            },
+                            text = {
+                                Column {
                                     Text(
-                                        text = "توضیحات را خواندم",
-                                        style = bodySmallCard,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = "آیا از ثبت این سفارش مطمئنی؟",
+                                        style = bodyMediumCard,
+                                        textAlign = TextAlign.Right,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Checkbox(
-                                        checked = hasReadDescription.value,
-                                        onCheckedChange = { hasReadDescription.value = it }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        text = "قیمت نهایی سفارش: ${
+                                            finalPrice.formatBalanceWithCommas().toPersianDigits()
+                                        } تومان",
+                                        style = bodyMediumCard,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        textAlign = TextAlign.Right
                                     )
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                hasReadDescription.value = !hasReadDescription.value
+                                            },
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.End
+                                    ) {
+                                        Text(
+                                            text = "توضیحات را خواندم",
+                                            style = bodySmallCard,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Checkbox(
+                                            checked = hasReadDescription.value,
+                                            onCheckedChange = { hasReadDescription.value = it }
+                                        )
+                                    }
                                 }
                             }
+                        )
+                    }
+
+                    LaunchedEffect(orderMessage) {
+                        if (orderMessage == "✅ سفارش با موفقیت ثبت شد" && !viewModel.isOrderSaved.value) {
+                            viewModel.isOrderSaved.value = true
+                            accountViewModel.addOrderNumber(
+                                context,
+                                lifecycleOwner,
+                                viewModel.orderId.value ?: return@LaunchedEffect
+                            )
                         }
-                    )
+                    }
                 }
 
-                LaunchedEffect(orderMessage) {
-                    if (orderMessage == "✅ سفارش با موفقیت ثبت شد" && !viewModel.isOrderSaved.value) {
-                        viewModel.isOrderSaved.value = true
-                        accountViewModel.addOrderNumber(
-                            context,
-                            lifecycleOwner,
-                            viewModel.orderId.value ?: return@LaunchedEffect
+                AnimatedVisibility(
+                    visible = scrollState.canScrollForward,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 16.dp, end = 16.dp),
+                    enter = slideInVertically(initialOffsetY = { it * 2 }),
+                    exit = slideOutVertically(targetOffsetY = { it * 2 })
+                ) {
+                    FloatingActionButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                scrollState.animateScrollTo(scrollState.maxValue)
+                            }
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Scroll to End"
                         )
                     }
                 }
