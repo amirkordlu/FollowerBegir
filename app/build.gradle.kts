@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.amk.follower"
+    namespace = "com.amk.sakoo"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.amk.follower"
+        applicationId = "com.amk.sakoo"
         minSdk = 21
         targetSdk = 36
         versionCode = 1
