@@ -1,6 +1,8 @@
 package com.amk.sakoo.ui.features.profileScreen
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.LocalActivityResultRegistryOwner
@@ -57,7 +59,6 @@ import com.amk.sakoo.ui.theme.bodyMediumCard
 import com.amk.sakoo.ui.theme.bodySmallCard
 import com.amk.sakoo.util.RSA_KEY
 import com.amk.sakoo.util.formatBalanceWithCommas
-import com.amk.sakoo.util.sendEmail
 import com.amk.sakoo.util.toPersianDigits
 import com.maxkeppeker.sheets.core.CoreDialog
 import com.maxkeppeker.sheets.core.models.CoreSelection
@@ -100,6 +101,8 @@ fun ShopScreen() {
                 Log.v("LoginScreen", "Connected to Bazaar")
             },
             onFailure = { throwable ->
+                Toast.makeText(context, "خطا در برقراری ارتباط با کافه بازار، لطفا با پشتیبانی تماس بگیرید", Toast.LENGTH_SHORT)
+                    .show()
                 Log.v("LoginScreen", "Failed to connect: ${throwable.message}")
             },
             onDisconnected = {
@@ -206,7 +209,11 @@ fun ShopScreen() {
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
-                                Toast.makeText(context, "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             },
                             onSuccess = { purchaseEntity ->
                                 viewModel.increaseWallet(context, lifecycleOwner, 10000)
@@ -242,7 +249,11 @@ fun ShopScreen() {
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
-                                Toast.makeText(context, "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             },
                             onSuccess = { purchaseEntity ->
                                 viewModel.increaseWallet(context, lifecycleOwner, 5000)
@@ -288,7 +299,11 @@ fun ShopScreen() {
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
-                                Toast.makeText(context, "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             },
                             onSuccess = { purchaseEntity ->
                                 viewModel.increaseWallet(context, lifecycleOwner, 50000)
@@ -323,7 +338,11 @@ fun ShopScreen() {
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
-                                Toast.makeText(context, "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             },
                             onSuccess = { purchaseEntity ->
                                 viewModel.increaseWallet(context, lifecycleOwner, 20000)
@@ -368,7 +387,11 @@ fun ShopScreen() {
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
-                                Toast.makeText(context, "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             },
                             onSuccess = { purchaseEntity ->
                                 viewModel.increaseWallet(context, lifecycleOwner, 200000)
@@ -404,7 +427,11 @@ fun ShopScreen() {
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
-                                Toast.makeText(context, "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             },
                             onSuccess = { purchaseEntity ->
                                 viewModel.increaseWallet(context, lifecycleOwner, 100000)
@@ -449,7 +476,11 @@ fun ShopScreen() {
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
-                                Toast.makeText(context, "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             },
                             onSuccess = { purchaseEntity ->
                                 viewModel.increaseWallet(context, lifecycleOwner, 500000)
@@ -485,7 +516,11 @@ fun ShopScreen() {
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
-                                Toast.makeText(context, "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             },
                             onSuccess = { purchaseEntity ->
                                 viewModel.increaseWallet(context, lifecycleOwner, 300000)
@@ -530,7 +565,11 @@ fun ShopScreen() {
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
-                                Toast.makeText(context, "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             },
                             onSuccess = { purchaseEntity ->
                                 viewModel.increaseWallet(context, lifecycleOwner, 2000000)
@@ -551,8 +590,8 @@ fun ShopScreen() {
                 "۲,۰۰۰,۰۰۰ تومان",
                 Color(0xFFF3E5F5),
                 Color(0xFF7E57C2),
-                false,
-                ""
+                true,
+                "۵٪ تخفیف"
             )
 
             BuyCoinCard(
@@ -566,7 +605,11 @@ fun ShopScreen() {
                             "purchasePayload",
                             activityResultRegistry,
                             onFailure = {
-                                Toast.makeText(context, "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "خرید ناموفق. دوباره رو همین محصول کلیک کن تا به موجودیت اضافه بشه",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             },
                             onSuccess = { purchaseEntity ->
                                 viewModel.increaseWallet(context, lifecycleOwner, 1000000)
@@ -586,8 +629,8 @@ fun ShopScreen() {
                 }, "۱,۰۰۰,۰۰۰ تومان",
                 Color(0xFFE8EAF6),
                 Color(0xFF3949AB),
-                false,
-                ""
+                true,
+                "۵٪ تخفیف"
             )
 
         }
@@ -596,7 +639,9 @@ fun ShopScreen() {
             modifier = Modifier
                 .padding(vertical = 24.dp)
                 .clickable {
-                   sendEmail(context,"amir.kordlu@gmail.com")
+                    val telegramId = "amk_support"
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/$telegramId"))
+                    context.startActivity(intent)
                 },
             text = "نیاز به پشتیبانی داری؟ کلیک کن",
             style = bodySmallCard,
