@@ -62,7 +62,7 @@ fun NotificationScreen() {
                     text = "پیام‌ها",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily(Font(R.font.dana_medium))
+                    fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
                 )
             }
         }

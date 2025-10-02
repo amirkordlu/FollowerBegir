@@ -92,13 +92,13 @@ fun HeaderSection(onClick: () -> Unit) {
                 text = "سکو",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(Font(R.font.dana_medium))
+                fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
             )
             Text(
                 text = "سکوی پرتاب شما در دنیای مجازی",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontFamily = FontFamily(Font(R.font.dana_medium))
+                fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
             )
         }
     }
@@ -140,7 +140,7 @@ fun PromoBanner(onClick: () -> Unit) {
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontFamily = FontFamily(Font(R.font.dana_medium))
+                    fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
                 )
                 Text(
                     text = "با شارژ بالای 1 میلیون تومان، ۵٪ اعتبار بیشتر هدیه بگیرید!",
@@ -148,7 +148,7 @@ fun PromoBanner(onClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.padding(top = 8.dp),
                     textAlign = TextAlign.Right,
-                    fontFamily = FontFamily(Font(R.font.dana_medium))
+                    fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
                 )
                 Button(
                     onClick = { onClick.invoke() },
@@ -161,7 +161,7 @@ fun PromoBanner(onClick: () -> Unit) {
                 ) {
                     Text(
                         text = "افزایش موجودی",
-                        fontFamily = FontFamily(Font(R.font.dana_medium))
+                        fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
                     )
                 }
             }
@@ -231,7 +231,7 @@ fun PlatformItem(platform: SocialPlatform, onClick: () -> Unit) {
             style = MaterialTheme.typography.labelLarge.copy(textDirection = TextDirection.Rtl),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 8.dp),
-            fontFamily = FontFamily(Font(R.font.dana_medium))
+            fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
         )
     }
 }

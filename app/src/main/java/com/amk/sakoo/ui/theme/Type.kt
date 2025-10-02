@@ -23,7 +23,7 @@ val Typography = Typography(
 
 val navigationBarTextStyle = TextStyle(
     fontSize = 12.sp,
-    fontFamily = FontFamily(Font(R.font.dana_medium)),
+    fontFamily = FontFamily(Font(R.font.vazirmatn_medium)),
     fontWeight = FontWeight(500),
     color = Color(0xFF000000),
     textAlign = TextAlign.Center,
@@ -31,7 +31,7 @@ val navigationBarTextStyle = TextStyle(
 
 val textFieldStyle = TextStyle(
     fontSize = 16.sp,
-    fontFamily = FontFamily(Font(R.font.dana_medium)),
+    fontFamily = FontFamily(Font(R.font.vazirmatn_medium)),
     fontWeight = FontWeight(400),
     color = Color(0xFF424242),
     textAlign = TextAlign.Right,
@@ -39,7 +39,7 @@ val textFieldStyle = TextStyle(
 
 val bodyLargeCard = TextStyle(
     fontSize = 22.sp,
-    fontFamily = FontFamily(Font(R.font.dana_medium)),
+    fontFamily = FontFamily(Font(R.font.vazirmatn_medium)),
     fontWeight = FontWeight(600),
     color = Color(0xFF000000),
     textAlign = TextAlign.Center,
@@ -47,7 +47,7 @@ val bodyLargeCard = TextStyle(
 
 val bodyMediumCard = TextStyle(
     fontSize = 16.sp,
-    fontFamily = FontFamily(Font(R.font.dana_medium)),
+    fontFamily = FontFamily(Font(R.font.vazirmatn_medium)),
     fontWeight = FontWeight(500),
     color = Color(0xFF000000),
     textAlign = TextAlign.Center,
@@ -56,7 +56,7 @@ val bodyMediumCard = TextStyle(
 
 val bodySmallCard = TextStyle(
     fontSize = 14.sp,
-    fontFamily = FontFamily(Font(R.font.dana_medium)),
+    fontFamily = FontFamily(Font(R.font.vazirmatn_medium)),
     fontWeight = FontWeight(500),
     color = Color(0xFF000000),
     textAlign = TextAlign.Center,

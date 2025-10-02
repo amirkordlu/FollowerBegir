@@ -234,14 +234,14 @@ fun DetailScreen(serviceId: String?) {
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(bottom = 4.dp),
-                                    fontFamily = FontFamily(Font(R.font.dana_medium))
+                                    fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
                                 )
                                 Text(
                                     text = detail.name,
                                     style = MaterialTheme.typography.bodyMedium.copy(textDirection = TextDirection.Rtl),
                                     fontWeight = FontWeight.SemiBold,
                                     color = MaterialTheme.colorScheme.onSurface,
-                                    fontFamily = FontFamily(Font(R.font.dana_medium))
+                                    fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
                                 )
                             }
 
@@ -261,13 +261,13 @@ fun DetailScreen(serviceId: String?) {
                                     style = MaterialTheme.typography.titleMedium.copy(textDirection = TextDirection.Rtl),
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.customColors.onSuccessContainer,
-                                    fontFamily = FontFamily(Font(R.font.dana_medium))
+                                    fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
                                 )
                                 Text(
                                     text = "قیمت (هر هزار تا)",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.customColors.onSuccessContainer,
-                                    fontFamily = FontFamily(Font(R.font.dana_medium))
+                                    fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
                                 )
                             }
                         }
@@ -540,7 +540,7 @@ fun DetailScreen(serviceId: String?) {
                                 ) {
                                     Text(
                                         "آره، ثبت کن",
-                                        fontFamily = FontFamily(Font(R.font.dana_medium))
+                                        fontFamily = FontFamily(Font(R.font.vazirmatn_medium))
                                     )
                                 }
                             },
@@ -549,7 +549,7 @@ fun DetailScreen(serviceId: String?) {
                                     showConfirmDialog.value = false
                                     hasReadDescription.value = false
                                 }) {
-                                    Text("خیر", fontFamily = FontFamily(Font(R.font.dana_medium)))
+                                    Text("خیر", fontFamily = FontFamily(Font(R.font.vazirmatn_medium)))
                                 }
                             },
                             title = {
@@ -662,7 +662,7 @@ fun HtmlDescriptionView(htmlText: String) {
     }
 
     val customFont = remember {
-        ResourcesCompat.getFont(context, R.font.dana_medium)
+        ResourcesCompat.getFont(context, R.font.vazirmatn_medium)
     }
 
     AndroidView(

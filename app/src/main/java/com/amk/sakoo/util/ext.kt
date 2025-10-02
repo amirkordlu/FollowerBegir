@@ -31,7 +31,7 @@ fun appendTextDialog(text: String): AnnotatedString {
     val annotatedString = buildAnnotatedString {
         withStyle(
             style = SpanStyle(
-                fontFamily = FontFamily(Font(R.font.dana_medium)),
+                fontFamily = FontFamily(Font(R.font.vazirmatn_medium)),
                 fontSize = 14.sp,
                 color = Color.Black
             )
