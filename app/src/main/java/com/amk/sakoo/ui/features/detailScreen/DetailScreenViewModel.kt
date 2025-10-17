@@ -41,7 +41,7 @@ class DetailScreenViewModel(
     }
 
 
-    fun addOrderService(serviceId: Int, link: String, quantity: Int) {
+    fun addOrderService(serviceId: Int, link: String, quantity: Int, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch(coroutineExceptionHandler) {
             isLoading.value = true
             isError.value = false
@@ -52,13 +52,16 @@ class DetailScreenViewModel(
                     orderMessage.value = "✅ سفارش با موفقیت ثبت شد"
                     orderId.value = result.order
                     isOrderSaved.value = false
+                    onSuccess() // Call success callback to deduct wallet
                 } else {
                     orderMessage.value = "❌ ثبت سفارش ناموفق بود"
                     isError.value = true
+                    onError("ثبت سفارش ناموفق بود")
                 }
-            } catch (_: Exception) {
+            } catch (e: Exception) {
                 orderMessage.value = "❌ خطا در ثبت سفارش"
                 isError.value = true
+                onError("خطا در ثبت سفارش: ${e.message}")
             } finally {
                 isLoading.value = false
                 delay(5000)

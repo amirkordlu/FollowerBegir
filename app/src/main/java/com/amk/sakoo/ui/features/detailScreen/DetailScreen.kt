@@ -510,18 +510,26 @@ fun DetailScreen(serviceId: String?) {
 
                                         val currentWallet = accountViewModel.wallet.value
                                         if (currentWallet >= finalPrice) {
-                                            accountViewModel.decreaseWallet(
-                                                context,
-                                                lifecycleOwner,
-                                                finalPrice,
-                                                onError = {
-                                                    Toast.makeText(context, it, Toast.LENGTH_SHORT)
-                                                        .show()
-                                                })
+                                            // First create the order, then deduct wallet only if successful
                                             viewModel.addOrderService(
                                                 serviceId?.toInt() ?: 0,
                                                 pageId.value,
-                                                quantityValue
+                                                quantityValue,
+                                                onSuccess = {
+                                                    // Only deduct wallet after successful order creation
+                                                    accountViewModel.decreaseWallet(
+                                                        context,
+                                                        lifecycleOwner,
+                                                        finalPrice,
+                                                        onError = {
+                                                            Toast.makeText(context, it, Toast.LENGTH_SHORT)
+                                                                .show()
+                                                        })
+                                                },
+                                                onError = { errorMessage ->
+                                                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG)
+                                                        .show()
+                                                }
                                             )
 
                                             showConfirmDialog.value = false
