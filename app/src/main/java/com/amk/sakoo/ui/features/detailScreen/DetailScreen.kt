@@ -510,14 +510,6 @@ fun DetailScreen(serviceId: String?) {
 
                                         val currentWallet = accountViewModel.wallet.value
                                         if (currentWallet >= finalPrice) {
-                                            accountViewModel.decreaseWallet(
-                                                context,
-                                                lifecycleOwner,
-                                                finalPrice,
-                                                onError = {
-                                                    Toast.makeText(context, it, Toast.LENGTH_SHORT)
-                                                        .show()
-                                                })
                                             viewModel.addOrderService(
                                                 serviceId?.toInt() ?: 0,
                                                 pageId.value,
@@ -609,6 +601,22 @@ fun DetailScreen(serviceId: String?) {
                     LaunchedEffect(orderMessage) {
                         if (orderMessage == "✅ سفارش با موفقیت ثبت شد" && !viewModel.isOrderSaved.value) {
                             viewModel.isOrderSaved.value = true
+
+                            // Compute final price again to deduct on success only
+                            val quantityValue = quantity.value.toIntOrNull() ?: 0
+                            val totalPriceWithProfit =
+                                (quantityValue.toFloat() / 1000f) * (detail.rate * PROFIT_PERCENT)
+                            val finalPrice = totalPriceWithProfit.toInt()
+
+                            accountViewModel.decreaseWallet(
+                                context,
+                                lifecycleOwner,
+                                finalPrice,
+                                onError = {
+                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                }
+                            )
+
                             accountViewModel.addOrderNumber(
                                 context,
                                 lifecycleOwner,
