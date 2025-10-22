@@ -1,11 +1,14 @@
 package com.amk.sakoo.ui.features.detailScreen
 
+import android.content.Context
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amk.sakoo.model.data.ServiceItemsResponse
 import com.amk.sakoo.model.repository.addOrderRepostiory.AddOrderServiceRepository
 import com.amk.sakoo.model.repository.serviceItemsRepository.ServiceItemsRepository
+import com.amk.sakoo.ui.features.profileScreen.AccountViewModel
 import com.amk.sakoo.util.coroutineExceptionHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -41,7 +44,17 @@ class DetailScreenViewModel(
     }
 
 
-    fun addOrderService(serviceId: Int, link: String, quantity: Int) {
+    fun addOrderService(
+        serviceId: Int,
+        link: String,
+        quantity: Int,
+        amount: Int,
+        context: Context,
+        lifecycleOwner: LifecycleOwner,
+        accountViewModel: AccountViewModel,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
         viewModelScope.launch(coroutineExceptionHandler) {
             isLoading.value = true
             isError.value = false
@@ -52,13 +65,29 @@ class DetailScreenViewModel(
                     orderMessage.value = "✅ سفارش با موفقیت ثبت شد"
                     orderId.value = result.order
                     isOrderSaved.value = false
+
+                    try {
+                        val walletDeducted =
+                            accountViewModel.decreaseWalletSuspend(context, lifecycleOwner, amount)
+                        if (!walletDeducted) {
+                            onError("خطا در کسر مبلغ از کیف پول - موجودی کافی نیست")
+                            return@launch
+                        }
+                    } catch (e: Exception) {
+                        onError("خطا در کسر مبلغ از کیف پول: ${e.message}")
+                        return@launch
+                    }
+
+                    onSuccess()
                 } else {
                     orderMessage.value = "❌ ثبت سفارش ناموفق بود"
                     isError.value = true
+                    onError("ثبت سفارش ناموفق بود")
                 }
-            } catch (_: Exception) {
+            } catch (e: Exception) {
                 orderMessage.value = "❌ خطا در ثبت سفارش"
                 isError.value = true
+                onError("خطا در ثبت سفارش: ${e.message}")
             } finally {
                 isLoading.value = false
                 delay(5000)

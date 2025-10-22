@@ -510,18 +510,21 @@ fun DetailScreen(serviceId: String?) {
 
                                         val currentWallet = accountViewModel.wallet.value
                                         if (currentWallet >= finalPrice) {
-                                            accountViewModel.decreaseWallet(
-                                                context,
-                                                lifecycleOwner,
-                                                finalPrice,
-                                                onError = {
-                                                    Toast.makeText(context, it, Toast.LENGTH_SHORT)
-                                                        .show()
-                                                })
                                             viewModel.addOrderService(
                                                 serviceId?.toInt() ?: 0,
                                                 pageId.value,
-                                                quantityValue
+                                                quantityValue,
+                                                finalPrice,
+                                                context,
+                                                lifecycleOwner,
+                                                accountViewModel,
+                                                onSuccess = {
+                                                    // order is successful
+                                                },
+                                                onError = { errorMessage ->
+                                                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG)
+                                                        .show()
+                                                }
                                             )
 
                                             showConfirmDialog.value = false

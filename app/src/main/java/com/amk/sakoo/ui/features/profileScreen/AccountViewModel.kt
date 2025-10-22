@@ -13,6 +13,10 @@ import com.farsitel.bazaar.storage.BazaarStorage
 import com.farsitel.bazaar.storage.callback.BazaarStorageCallback
 import com.farsitel.bazaar.util.ext.toReadableString
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -75,19 +79,57 @@ class AccountViewModel : ViewModel() {
         }
     }
 
-    fun decreaseWallet(
+//    fun decreaseWallet(
+//        context: Context,
+//        owner: LifecycleOwner,
+//        amount: Int,
+//        onError: (String) -> Unit
+//    ) {
+//        // First check if we have enough balance in the current state
+//        if (wallet.value < amount) {
+//            onError("موجودی کافی نیست")
+//            return
+//        }
+//
+//        updateUserData(context, owner) { data ->
+//            if (data.wallet >= amount) {
+//                data.copy(wallet = data.wallet - amount)
+//            } else {
+//                onError("موجودی کافی نیست")
+//                return@updateUserData null
+//            }
+//        }
+//    }
+
+    suspend fun decreaseWalletSuspend(
         context: Context,
         owner: LifecycleOwner,
-        amount: Int,
-        onError: (String) -> Unit
-    ) {
-        updateUserData(context, owner) { data ->
-            if (data.wallet >= amount) {
-                data.copy(wallet = data.wallet - amount)
-            } else {
-                onError("موجودی کافی نیست")
-                return@updateUserData null
+        amount: Int
+    ): Boolean = withContext(Dispatchers.Main) {
+        suspendCancellableCoroutine { continuation ->
+            if (wallet.value < amount) {
+                continuation.resume(false)
+                return@suspendCancellableCoroutine
             }
+            
+            BazaarStorage.getSavedData(context, owner, BazaarStorageCallback { response ->
+                val json = response?.data?.toReadableString().orEmpty()
+                val current = try {
+                    Json.decodeFromString<UserStoredData>(json)
+                } catch (e: Exception) {
+                    UserStoredData(0, emptyList())
+                }
+
+                if (current.wallet >= amount) {
+                    val updated = current.copy(wallet = current.wallet - amount)
+                    wallet.value = updated.wallet
+                    orderNumbers.value = updated.orderNumbers
+                    saveUserData(context, owner, updated)
+                    continuation.resume(true)
+                } else {
+                    continuation.resume(false)
+                }
+            })
         }
     }
 
@@ -111,7 +153,11 @@ class AccountViewModel : ViewModel() {
                     UserStoredData(0, emptyList())
                 }
 
-                val updated = update(current) ?: return@BazaarStorageCallback
+                val updated = update(current)
+                if (updated == null) {
+                    return@BazaarStorageCallback
+                }
+                
                 wallet.value = updated.wallet
                 orderNumbers.value = updated.orderNumbers
                 saveUserData(context, owner, updated)
